@@ -9,9 +9,9 @@
   <div class="max-w-s px-2">
     <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" action="{{ url_for('index') }}" method="POST">
       <h2>Change num of variables (will delete data)</h2>
-      <input type="hidden" name="form_type" value="change_variable_num"/>
+      <input type="hidden" name="form_type" value="set_variables"/>
       <div class="mb-4">
-        <input class="shadow appearance-none border rounded w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="variables" type="text" placeholder="variables"  name="variables">
+        <input class="shadow appearance-none border rounded w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="variables" type="text" name="variables" value="{{ variables }}">
         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
           Submit
         </button>
@@ -25,18 +25,14 @@
     <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" action="{{ url_for('index') }}" method="POST">
       <h2>Input candidate</h2>
       <input type="hidden" name="form_type" value="add_candidate"/>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="x">
-          x
-        </label>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="x" type="text" placeholder="x"  name="x">
-      </div>
-      <div class="mb-6">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="y">
-          y
-        </label>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="y" type="text" placeholder="y"  name="y">
-      </div>
+      {% for i in range(variables) %}
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="x">
+            variable {{ i }}
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="variable_{{ i }}" type="text" placeholder="variable {{ i }}"  name="variable_{{ i }}">
+        </div>
+      {% endfor %}
       <div class="flex justify-center items-center">
         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
           Submit
@@ -44,24 +40,19 @@
       </div>
     </form>
   </div>
-
-
   <div class="max-w-xs px-2">
     <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" action="{{ url_for('index') }}" method="POST">
       <h2>Input voter</h2>
       <input type="hidden" name="form_type" value="add_voter"/>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="x">
-          x
-        </label>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="x" type="text" placeholder="x"  name="x">
-      </div>
-      <div class="mb-6">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="y">
-          y
-        </label>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="y" type="text" placeholder="y"  name="y">
-      </div>
+      {% for i in range(variables) %}
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="x">
+            variable {{ i }}
+          </label>
+          <!--TODO make input a slider bar OR place points on a graph-->
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="variable_{{ i }}" type="text" placeholder="variable {{ i }}"  name="variable_{{ i }}">
+        </div>
+      {% endfor %}
       <div class="flex justify-center items-center">
         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
           Submit
@@ -81,12 +72,16 @@
       <tbody>
         {% for candidate in candidates %}
         <tr>
-          <td>({{ candidate['x'] }}, {{ candidate['y'] }})</td>
+          <td>(
+            {% for i in range(variables) %}
+              {{ candidate[i] }}{% if not loop.last %}, {% endif %}
+            {% endfor %})</td>
           <td>
             <form action="{{ url_for('index') }}" method="POST">
               <input type="hidden" name="form_type" value="delete_candidate"/>
-              <input type="hidden" name="x" value="{{ candidate['x'] }}"/>
-              <input type="hidden" name="y" value="{{ candidate['y'] }}"/>
+              {% for i in range(variables) %}
+                <input type="hidden" name="variable_{{ i }}" value="{{ candidate[i] }}"/>
+              {% endfor %}
               <button class="bg-red-500 hover:bg-red-700 text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Delete</button>
             </form>
           </td>
@@ -104,12 +99,16 @@
       <tbody>
         {% for voter in voters %}
         <tr>
-          <td>({{ voter['x'] }}, {{ voter['y'] }})</td>
+          <td>(
+            {% for i in range(variables) %}
+              {{ voter[i] }}{% if not loop.last %}, {% endif %}
+            {% endfor %})</td>
           <td>
             <form action="{{ url_for('index') }}" method="POST">
               <input type="hidden" name="form_type" value="delete_voter"/>
-              <input type="hidden" name="x" value="{{ voter['x'] }}"/>
-              <input type="hidden" name="y" value="{{ voter['y'] }}"/>
+              {% for i in range(variables) %}
+                <input type="hidden" name="variable_{{ i }}" value="{{ voter[i] }}"/>
+              {% endfor %}
               <button class="bg-red-500 hover:bg-red-700 text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Delete</button>
             </form>
           </td>
