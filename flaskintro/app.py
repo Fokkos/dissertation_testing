@@ -5,10 +5,18 @@ app = Flask(__name__)
 candidates = []
 voters = []
 variables = 2
+distance_measure = 'euclidean'
+
+# Election types to implement
+# single winner
+# multiple winners
+# single transferable vote
+# participatory budgeting
+# approval voting
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    global variables, candidates, voters  # Declare variables as global so they can be used inside index()
+    global variables, candidates, voters, distance_measure  # Declare variables as global so they can be used inside index()
     if request.method == 'POST':
         form = request.form
         
@@ -29,10 +37,14 @@ def index():
             variables = int(form['variables'])
             candidates = []
             voters = []
-    return render_template('index.html', candidates=candidates, voters=voters, variables=variables)
+        elif form['form_type'] == 'set_distance_measure':
+            print("setting distance measure")
+            distance_measure = form['distance_measure']
+    return render_template('index.html', candidates=candidates, voters=voters, variables=variables, distance_measure=distance_measure)
 
 def extract_point(form):
     points = {}
+    points['id'] = form['id']
     for i in range(variables):
         # add point to temp dictionary
         # TODO ideally have the ids be names by user
