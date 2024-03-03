@@ -1,4 +1,5 @@
 from flask import Flask, render_template, url_for, request
+from calculations import choose_candidate
 
 app = Flask(__name__)
 
@@ -6,6 +7,7 @@ candidates = []
 voters = []
 variables = 2
 distance_measure = 'euclidean'
+results = False
 
 # Election types to implement
 # single winner
@@ -16,7 +18,7 @@ distance_measure = 'euclidean'
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    global variables, candidates, voters, distance_measure  # Declare variables as global so they can be used inside index()
+    global variables, candidates, voters, distance_measure, results  # Declare variables as global so they can be used inside index()
     if request.method == 'POST':
         form = request.form
         
@@ -40,7 +42,12 @@ def index():
         elif form['form_type'] == 'set_distance_measure':
             print("setting distance measure")
             distance_measure = form['distance_measure']
-    return render_template('index.html', candidates=candidates, voters=voters, variables=variables, distance_measure=distance_measure)
+            if results:
+                print("updating results")
+                update_results()
+        elif form['form_type'] == 'calculate_distances':
+            update_results()
+    return render_template('index.html', candidates=candidates, voters=voters, variables=variables, distance_measure=distance_measure, results=results)
 
 def extract_point(form):
     points = {}
@@ -51,6 +58,12 @@ def extract_point(form):
         points[i] = (int(form['variable_' + str(i)]))
     return points
         
+def update_results():
+    global results
+    for voter in voters:
+        choose_candidate(candidates, voter, distance_measure, variables)
+        voter['winner'] = min(voter['distances'], key=lambda x: x[1])
+    results = True
 
 if __name__ == "__main__":
     app.run(debug=True)

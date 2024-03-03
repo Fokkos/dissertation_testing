@@ -24,14 +24,11 @@
       <h2>Change distance measure</h2>
       <input type="hidden" name="form_type" value="set_distance_measure"/>
       <div class="mb-1 flex">
-        <select class="shadow appearance-none border rounded w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="distance_measure" name="distance_measure">
+        <select class="shadow appearance-none border rounded w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="distance_measure" name="distance_measure" onchange="this.form.submit()">
           <option value="euclidean" {% if distance_measure == 'euclidean' %} selected {% endif %}>Euclidean</option>
           <option value="manhattan" {% if distance_measure == 'manhattan' %} selected {% endif %}>Manhattan</option>
-          <option value="chebyshev" {% if distance_measure == 'chebyshev' %} selected {% endif %}>Chebyshev</option>
+          <option value="chebyshev" {% if distance_measure == 'chebyshev' %} selected {% endif %}>TODO: Chebyshev</option>
         </select>
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-1/4" type="submit">
-          Submit
-        </button>
       </div>
     </form>
   </div>
@@ -147,6 +144,39 @@
       </tbody>
     </table>
   </div>
+  <!-- CALCULATE distances -->
+  <div class="max-w-xs h-full max-h-80 px-2">
+    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" action="{{ url_for('index') }}" method="POST">
+      <h2>Calculate distances</h2>
+      <input type="hidden" name="form_type" value="calculate_distances"/>
+      <div class="flex justify-center items-center">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- row 3: results -->
+<div>
+  <strong>Results</strong>
+  {% if not results %}
+    <p>No results</p>
+  {% endif %}
+  <table class="table-auto">
+    <tbody>
+      {% for voter in voters %}
+      <tr>
+        <td>{{ voter['id'] }}</td>
+        <td>Winner: {{ voter['winner'] }}</td>
+        {% for distance in voter['distances'] %}
+          <td>{{ distance }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
 
