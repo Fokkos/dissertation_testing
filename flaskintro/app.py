@@ -8,6 +8,7 @@ voters = []
 variables = 2
 distance_measure = 'euclidean'
 results = False
+variable_names = ['x', 'y']
 
 # Election types to implement
 # single winner
@@ -18,7 +19,7 @@ results = False
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    global variables, candidates, voters, distance_measure, results  # Declare variables as global so they can be used inside index()
+    global variables, candidates, voters, distance_measure, results, variable_names  # Declare variables as global so they can be used inside index()
     if request.method == 'POST':
         form = request.form
         
@@ -37,6 +38,7 @@ def index():
         elif form['form_type'] == 'set_variables':
             # TODO add confirmation for deleting all candidates and voters
             variables = int(form['variables'])
+            assign_default_variable_names()
             candidates = []
             voters = []
         elif form['form_type'] == 'set_distance_measure':
@@ -47,7 +49,11 @@ def index():
                 update_results()
         elif form['form_type'] == 'calculate_distances':
             update_results()
-    return render_template('index.html', candidates=candidates, voters=voters, variables=variables, distance_measure=distance_measure, results=results)
+        elif form['form_type'] == 'set_variable_names':
+            print("setting variable names")
+            update_variable_names(form)
+            print(variable_names)
+    return render_template('index.html', candidates=candidates, voters=voters, variables=variables, distance_measure=distance_measure, results=results, variable_names=variable_names)
 
 def extract_point(form):
     points = {}
@@ -64,6 +70,18 @@ def update_results():
         choose_candidate(candidates, voter, distance_measure, variables)
         voter['winner'] = min(voter['distances'], key=lambda x: x[1])
     results = True
+
+def assign_default_variable_names():
+    global variables, variable_names
+    variable_names.clear()
+    for i in range(variables):
+        variable_names.append('variable ' + str(i + 1))
+
+def update_variable_names(form):
+    global variable_names
+    variable_names.clear()
+    for i in range(variables):
+        variable_names.append(form['variable_' + str(i)])
 
 if __name__ == "__main__":
     app.run(debug=True)

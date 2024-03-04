@@ -35,7 +35,27 @@
 </div>
 
 <!-- row 2: candidate & voter management-->
+<!-- variable settings -->
 <div class="w-full flex justify-center space-x-4">
+  <div class="max-w-xs h-full max-h-80 px-2 overflow-y-scroll">
+    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" action="{{ url_for('index') }}" method="POST">
+      <h2>Edit variable names</h2>
+      <input type="hidden" name="form_type" value="set_variable_names"/>
+      {% for i in range(variables) %}
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="x">
+            variable {{ i + 1 }}
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="variable_{{ i }}" type="text" value="{{ variable_names[i] }}"  name="variable_{{ i }}">
+        </div>
+      {% endfor %}
+      <div class="flex justify-center items-center">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>
   <!-- INPUT candidate -->
   <div class="max-w-xs h-full max-h-80 px-2 overflow-y-scroll">
     <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" action="{{ url_for('index') }}" method="POST">
@@ -48,9 +68,9 @@
       {% for i in range(variables) %}
         <div class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="x">
-            variable {{ i }}
+            {{variable_names[i]}}
           </label>
-          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="variable_{{ i }}" type="text" placeholder="variable {{ i }}"  name="variable_{{ i }}">
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="variable_{{ i }}" type="text" placeholder="replace me with numline"  name="variable_{{ i }}">
         </div>
       {% endfor %}
       <div class="flex justify-center items-center">
@@ -72,9 +92,9 @@
       {% for i in range(variables) %}
         <div class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="x">
-            variable {{ i }}
+            {{variable_names[i]}}
           </label>
-          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="variable_{{ i }}" type="text" placeholder="variable {{ i }}"  name="variable_{{ i }}">
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="variable_{{ i }}" type="text" placeholder="replace me with numline"  name="variable_{{ i }}">
         </div>
       {% endfor %}
       <div class="flex justify-center items-center">
@@ -169,7 +189,7 @@
       {% for voter in voters %}
       <tr>
         <td>{{ voter['id'] }}</td>
-        <td>Winner: {{ voter['winner'] }}</td>
+        <strong>Winner: {{ voter['winner'] }}</strong>
         {% for distance in voter['distances'] %}
           <td>{{ distance }}</td>
         {% endfor %}
