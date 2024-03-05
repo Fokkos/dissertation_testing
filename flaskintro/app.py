@@ -59,17 +59,17 @@ def extract_point(form):
     points = {}
     points['id'] = form['id']
     for i in range(variables):
-        # add point to temp dictionary
-        # TODO ideally have the ids be names by user
+        # FOR VOTERS, need to make it so that it gets the results and winners. should just need to pass through in the html
         points[i] = (int(form['variable_' + str(i)]))
     return points
         
 def update_results():
-    global results
-    for voter in voters:
-        choose_candidate(candidates, voter, distance_measure, variables)
-        voter['winner'] = min(voter['distances'], key=lambda x: x[1])
-    results = True
+    if candidates:
+        global results
+        for voter in voters:
+            choose_candidate(candidates, voter, distance_measure, variables)
+            voter['winner'] = min(voter['distances'], key=lambda x: x[1])
+        results = True
 
 def assign_default_variable_names():
     global variables, variable_names
