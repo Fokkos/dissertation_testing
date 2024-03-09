@@ -1,5 +1,7 @@
 from flask import Flask, render_template, url_for, request
 from calculations import choose_candidate
+from fileinput import filename
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -53,6 +55,9 @@ def index():
             print("setting variable names")
             update_variable_names(form)
             print(variable_names)
+        elif form['form_type'] == 'csv':
+            f = request.files.get('file')
+            handle_csv(f)
     return render_template('index.html', candidates=candidates, voters=voters, variables=variables, distance_measure=distance_measure, results=results, variable_names=variable_names)
 
 def extract_point(form):
@@ -82,6 +87,12 @@ def update_variable_names(form):
     variable_names.clear()
     for i in range(variables):
         variable_names.append(form['variable_' + str(i)])
+
+def handle_csv(file):
+    uploaded_df = pd.read_csv(file,
+                              encoding='unicode_escape')
+    print(uploaded_df)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
