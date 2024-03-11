@@ -1,11 +1,11 @@
 # For a single voter, calc distance for each candidate, return the candidate with the smallest distance
-def choose_candidate(candidates, voter, distance_measure, variables):
+def choose_candidate(data, voter):
     distances = []
-    for candidate in candidates:
-        if distance_measure == 'euclidean':
-            distances.append((candidate['id'], euclidean_distance(voter, candidate, variables)))
-        elif distance_measure == 'manhattan':
-            distances.append((candidate['id'], manhattan_distance(voter, candidate, variables)))
+    for candidate in data.candidates:
+        if data.distance_measure == 'euclidean':
+            distances.append((candidate['id'], euclidean_distance(voter, candidate, data.variables)))
+        elif data.distance_measure == 'manhattan':
+            distances.append((candidate['id'], manhattan_distance(voter, candidate, data.variables)))
         # TODO: minkowski, discrete and hamming
         # research mahalanobis, cosine, jaccard, pearson, spearman, kendall
     voter['distances'] = distances

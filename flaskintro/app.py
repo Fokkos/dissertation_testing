@@ -1,16 +1,10 @@
 from flask import Flask, render_template, url_for, request
-from calculations import choose_candidate
-from fileinput import filename
-import pandas as pd
+from csv_handler import process_csv
+from data import Data
 
 app = Flask(__name__)
 
-candidates = []
-voters = []
-variables = 2
-distance_measure = 'euclidean'
-results = False
-variable_names = ['x', 'y']
+data = Data()
 
 # Election types to implement
 # single winner
@@ -21,78 +15,57 @@ variable_names = ['x', 'y']
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    global variables, candidates, voters, distance_measure, results, variable_names  # Declare variables as global so they can be used inside index()
+    global data  # Declare variables as global so they can be used inside index()
+    error = None
     if request.method == 'POST':
         form = request.form
         
         if form['form_type'] == 'add_candidate':
             point = extract_point(form)
-            candidates.append(point)
+            data.candidates.append(point)
         elif form['form_type'] == 'delete_candidate':
             point = extract_point(form)
-            candidates.remove(point)
+            data.candidates.remove(point)
         if form['form_type'] == 'add_voter':
             point = extract_point(form)
-            voters.append(point)
+            data.voters.append(point)
         elif form['form_type'] == 'delete_voter':
             point = extract_point(form)
-            voters.remove(point)
+            data.voters.remove(point)
         elif form['form_type'] == 'set_variables':
             # TODO add confirmation for deleting all candidates and voters
-            variables = int(form['variables'])
-            assign_default_variable_names()
-            candidates = []
-            voters = []
+            data.variables = int(form['variables'])
+            data.assign_default_variable_names()
+            data.candidates = []
+            data.voters = []
         elif form['form_type'] == 'set_distance_measure':
             print("setting distance measure")
-            distance_measure = form['distance_measure']
-            if results:
+            data.distance_measure = form['distance_measure']
+            if data.results:
                 print("updating results")
-                update_results()
+                data.update_results()
         elif form['form_type'] == 'calculate_distances':
-            update_results()
+            data.update_results()
         elif form['form_type'] == 'set_variable_names':
             print("setting variable names")
-            update_variable_names(form)
-            print(variable_names)
+            data.update_variable_names(form)
+            print(data.variable_names)
         elif form['form_type'] == 'csv':
-            f = request.files.get('file')
-            handle_csv(f)
-    return render_template('index.html', candidates=candidates, voters=voters, variables=variables, distance_measure=distance_measure, results=results, variable_names=variable_names)
+            file = request.files.get('file')
+            if file:
+                process_csv(file, data)
+            else:
+                print("no file")
+                error = 'Invalid file'
+    return render_template('index.html', error=error, data=data)
 
 def extract_point(form):
     points = {}
     points['id'] = form['id']
-    for i in range(variables):
+    for i in range(data.variables):
         # FOR VOTERS, need to make it so that it gets the results and winners. should just need to pass through in the html
         points[i] = (int(form['variable_' + str(i)]))
     return points
-        
-def update_results():
-    if candidates:
-        global results
-        for voter in voters:
-            choose_candidate(candidates, voter, distance_measure, variables)
-            voter['winner'] = min(voter['distances'], key=lambda x: x[1])
-        results = True
-
-def assign_default_variable_names():
-    global variables, variable_names
-    variable_names.clear()
-    for i in range(variables):
-        variable_names.append('variable ' + str(i + 1))
-
-def update_variable_names(form):
-    global variable_names
-    variable_names.clear()
-    for i in range(variables):
-        variable_names.append(form['variable_' + str(i)])
-
-def handle_csv(file):
-    uploaded_df = pd.read_csv(file,
-                              encoding='unicode_escape')
-    print(uploaded_df)
-
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -5,10 +5,17 @@
 {% endblock %}
 
 {% block body %}
+
+{% if error %}
+  <p class=error><strong>Error:</strong> {{ error }}
+{% endif %}
 <div class="w-full flex justify-center ">
   <div class="max-w-s px-2">
-    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" action="{{ url_for('index') }}" method="POST">
-      <h2>Change num of variables (will delete data)</h2>
+    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" 
+    action="{{ url_for('index') }}" 
+    method="POST"
+    onsubmit="return confirm('This will delete voter and candidate data, are you sure?');">
+      <h2>Change num of variables</h2>
       <input type="hidden" name="form_type" value="set_variables"/>
       <div class="mb-1 flex">
         <input class="shadow appearance-none border rounded w-3/5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="variables" type="text" name="variables" value="{{ variables }}">
@@ -25,15 +32,19 @@
       <input type="hidden" name="form_type" value="set_distance_measure"/>
       <div class="mb-1 flex">
         <select class="shadow appearance-none border rounded w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="distance_measure" name="distance_measure" onchange="this.form.submit()">
-          <option value="euclidean" {% if distance_measure == 'euclidean' %} selected {% endif %}>Euclidean</option>
-          <option value="manhattan" {% if distance_measure == 'manhattan' %} selected {% endif %}>Manhattan</option>
-          <option value="chebyshev" {% if distance_measure == 'chebyshev' %} selected {% endif %}>TODO: Chebyshev</option>
+          <option value="euclidean" {% if data.distance_measure == 'euclidean' %} selected {% endif %}>Euclidean</option>
+          <option value="manhattan" {% if data.distance_measure == 'manhattan' %} selected {% endif %}>Manhattan</option>
+          <option value="chebyshev" {% if data.distance_measure == 'chebyshev' %} selected {% endif %}>TODO: Chebyshev</option>
         </select>
       </div>
     </form>
   </div>
   <div class="max-w-s px-2">
-    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" action="{{ url_for('index') }}" method="post" enctype="multipart/form-data">
+    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" 
+    action="{{ url_for('index') }}" 
+    method="post" 
+    enctype="multipart/form-data"
+    onsubmit="return confirm('This will delete voter and candidate data, are you sure?');">
       <h2>Upload CSV Candidates</h2>
       <input type="file" name="file" accept=".csv">
       <input type="hidden" name="form_type" value="csv"/>
@@ -51,12 +62,12 @@
     <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" action="{{ url_for('index') }}" method="POST">
       <h2>Edit variable names</h2>
       <input type="hidden" name="form_type" value="set_variable_names"/>
-      {% for i in range(variables) %}
+      {% for i in range(data.variables) %}
         <div class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="x">
             variable {{ i + 1 }}
           </label>
-          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="variable_{{ i }}" type="text" value="{{ variable_names[i] }}"  name="variable_{{ i }}">
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="variable_{{ i }}" type="text" value="{{ data.variable_names[i] }}"  name="variable_{{ i }}">
         </div>
       {% endfor %}
       <div class="flex justify-center items-center">
@@ -75,10 +86,10 @@
         id/name
       </label>
       <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="id" type="text" placeholder="id"  name="id">
-      {% for i in range(variables) %}
+      {% for i in range(data.variables) %}
         <div class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="x">
-            {{variable_names[i]}}
+            {{data.variable_names[i]}}
           </label>
           <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="variable_{{ i }}" type="text" placeholder="replace me with numline"  name="variable_{{ i }}">
         </div>
@@ -99,10 +110,10 @@
         id/name
       </label>
       <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="id" type="text" placeholder="id"  name="id">
-      {% for i in range(variables) %}
+      {% for i in range(data.variables) %}
         <div class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="x">
-            {{variable_names[i]}}
+            {{data.variable_names[i]}}
           </label>
           <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="variable_{{ i }}" type="text" placeholder="replace me with numline"  name="variable_{{ i }}">
         </div>
@@ -118,14 +129,14 @@
   <div class="space-x-4 px-2">
     <table class="table-auto">
       <h1>Candidates</h1>
-      {% if not candidates %}
+      {% if not data.candidates %}
         <p>No candidates</p>
       {% endif %}
       <tbody>
-        {% for candidate in candidates %}
+        {% for candidate in data.candidates %}
         <tr>
           <td>{{ candidate['id'] }}: (
-            {% for i in range(variables) %}
+            {% for i in range(data.variables) %}
               {{ candidate[i] }}{% if not loop.last %}, {% endif %}
             {% endfor %})
           </td>
@@ -133,7 +144,7 @@
             <form action="{{ url_for('index') }}" method="POST">
               <input type="hidden" name="form_type" value="delete_candidate"/>
               <input type="hidden" name="id" value="{{ candidate["id"] }}"/>
-              {% for i in range(variables) %}
+              {% for i in range(data.variables) %}
                 <input type="hidden" name="variable_{{ i }}" value="{{ candidate[i] }}"/>
               {% endfor %}
               <button class="bg-red-500 hover:bg-red-700 text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Delete</button>
@@ -148,14 +159,14 @@
   <div class="space-x-4 px-2">
     <table class="table-auto">
       <h1>Voters</h1>
-      {% if not voters %}
+      {% if not data.voters %}
         <p>No voters</p>
       {% endif %}
       <tbody>
-        {% for voter in voters %}
+        {% for voter in data.voters %}
         <tr>
           <td>{{ voter['id'] }}: (
-            {% for i in range(variables) %}
+            {% for i in range(data.variables) %}
               {{ voter[i] }}{% if not loop.last %}, {% endif %}
             {% endfor %})
           </td>
@@ -163,7 +174,7 @@
             <form action="{{ url_for('index') }}" method="POST">
               <input type="hidden" name="form_type" value="delete_voter"/>
               <input type="hidden" name="id" value="{{ voter["id"] }}"/>
-              {% for i in range(variables) %}
+              {% for i in range(data.variables) %}
                 <input type="hidden" name="variable_{{ i }}" value="{{ voter[i] }}"/>
               {% endfor %}
               <button class="bg-red-500 hover:bg-red-700 text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Delete</button>
@@ -191,7 +202,7 @@
 <!-- row 3: results -->
 <div>
   <strong>Results</strong>
-  {% if not results or not candidates or not voters or not voters[0]['winner'] %}
+  {% if not data.results or not data.candidates or not data.voters or not data.voters[0]['winner'] %}
     <p>No results</p>
   {% else %}
   <table class="table-auto">
@@ -199,7 +210,7 @@
       <th>voter</th>
       <th>winner</th>
       <th>full results</th>
-      {% for voter in voters %}
+      {% for voter in data.voters %}
       <tr>
         <td>{{ voter['id'] }}</td>
         <td><strong>{{ voter['winner'][0] }}</strong></td>
