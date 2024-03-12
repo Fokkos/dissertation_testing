@@ -12,6 +12,10 @@ data = Data()
 # participatory budgeting
 # approval voting
 
+# TODO - add a way to select the election type
+# TODO - add edit var names to top row
+# TODO - add a settings modal for num of variables and var names. material symbols settings
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     global data
@@ -43,11 +47,7 @@ def index():
             data.update_variable_names(form)
         elif action == 'csv':
             file = request.files.get('file')
-            if file:
-                process_csv(file, data)
-            else:
-                print("no file")
-                error = 'Invalid file'
+            process_csv(file, data)
     return render_template('index.html', error=error, data=data)
 
 if __name__ == "__main__":

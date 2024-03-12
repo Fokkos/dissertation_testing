@@ -1,0 +1,35 @@
+<div class="px-2 w-1/2 max-h-1/3 overflow-y-scroll">
+    <table class="table-auto">
+        <div class="flex space-x-4">
+            <h1>{{type.title() + 's'}}</h1>
+            <!-- INPUT data -->
+            {% with type = type %}
+                {% include 'partials/add_data.html' %}
+            {% endwith %}
+        </div>
+        {% if not dataset %}
+            <p>{{'No ' + type + 's'}}</p>
+        {% endif %}
+        <tbody>
+        {% for datapoint in dataset %}
+        <tr>
+            <td>{{ datapoint['id'] }}: (
+            {% for i in range(data.variables) %}
+                {{ datapoint[i] }}{% if not loop.last %}, {% endif %}
+            {% endfor %})
+            </td>
+            <td>
+            <form action="{{ url_for('index') }}" method="POST">
+                <input type="hidden" name="form_type" value="{{'delete_' + type}}"/>
+                <input type="hidden" name="id" value="{{ datapoint["id"] }}"/>
+                {% for i in range(data.variables) %}
+                <input type="hidden" name="variable_{{ i }}" value="{{ datapoint[i] }}"/>
+                {% endfor %}
+                <button class="bg-red-500 hover:bg-red-700 text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Delete</button>
+            </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

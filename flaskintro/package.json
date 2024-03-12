@@ -7,6 +7,7 @@
     "start": "TAILWIND_MODE=watch craco start"
   },
   "dependencies": {
-    "flowbite": "^2.3.0"
+    "flowbite": "^2.3.0",
+    "material-symbols": "^0.16.0"
   }
 }

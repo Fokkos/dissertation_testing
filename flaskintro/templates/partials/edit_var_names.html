@@ -1,0 +1,65 @@
+<!-- Modal Trigger Button -->
+<div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" >
+    <button 
+        id="varNameModalTrigger" 
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+        Edit Variable names
+    </button>
+</div>
+
+<!-- Modal -->
+<div id="varNameModal" class="modal hidden fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center">
+    <div class="modal-content bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="max-w-xs h-full max-h-80 px-2 overflow-y-scroll">
+            <div class="mb-4 flex items-center justify-between">
+                <h5 class="modal-title text-xl font-semibold">Edit Variable Names</h5>
+                <button
+                    class="close-modal flex justify-center rounded border border-gray-300 bg-[--background] hover:bg-red-400"
+                    id="varNameCloseButton"
+                    aria-label="Close modal"
+                    title="Close modal"
+                    onclick(varNameModal.classList.add("hidden");)
+                    ><span class="material-icons">close</span>
+                </button>
+            </div>
+            <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" action="{{ url_for('index') }}" method="POST">
+                <input type="hidden" name="form_type" value="set_variable_names"/>
+                {% for i in range(data.variables) %}
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="x">
+                    variable {{ i + 1 }}
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="variable_{{ i }}" type="text" value="{{ data.variable_names[i] }}"  name="variable_{{ i }}">
+                </div>
+                {% endfor %}
+                <div class="flex justify-center items-center">
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                    Submit
+                </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get the modal
+    var varNameModal = document.getElementById("varNameModal");
+
+    // Get the button that opens the modal
+    var varNameBtn = document.getElementById("varNameModalTrigger");
+
+    // When the user clicks the button, open the modal 
+    varNameBtn.onclick = function() {
+        varNameModal.classList.remove("hidden");
+    }
+
+    // Add click event listener to the close button
+    varNameCloseButton.addEventListener('click', function(event) {
+        // Prevent default form submission behavior
+        event.preventDefault();
+        
+        // Close the modal
+        varNameModal.classList.add('hidden');
+    });
+</script>

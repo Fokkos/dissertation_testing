@@ -13,12 +13,12 @@ def choose_candidate(data, voter):
 def euclidean_distance(voter, candidate, variables):
     distance = 0
     for i in range(variables):
-        distance += (voter[i] - candidate[i]) ** 2
+        distance += (float(voter[i]) - float(candidate[i])) ** 2
     return distance ** 0.5
 
 def manhattan_distance(voter, candidate, variables):
     distance = 0
     for i in range(variables):
-        distance += abs(voter[i] - candidate[i])
+        distance += abs(float(voter[i]) - float(candidate[i]))
     return distance
 

@@ -1,0 +1,75 @@
+<!-- Modal Trigger Button -->
+<button 
+    id="{{type + 'ModalTrigger'}}" 
+    class="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline min-h-7 min-w-7">
+    <span class="material-icons">add</span>
+</button>
+
+<!-- Modal -->
+<div id="{{type + 'Modal'}}" class="modal hidden fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center">
+    <div class="modal-content bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <!-- Form -->
+        <div class="mb-4 flex items-center justify-between">
+            <h5 class="modal-title text-xl font-semibold">Create a new {{type}}</h5>
+            <button
+                class="close-modal flex justify-center rounded border border-gray-300 bg-[--background] hover:bg-red-400"
+                id="{{type + 'CloseButton'}}"
+                aria-label="Close modal"
+                title="Close modal"
+                onclick({{type + 'Modal'}}.classList.add("hidden");)
+                ><span class="material-icons">close</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form action="{{ url_for('index') }}" method="POST">
+                <input type="hidden" name="form_type" value="{{'add_' + type}}"/>
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="id">id/name</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="id" type="text" placeholder="id"  name="id" required>
+                {% for i in range(data.variables) %}
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="x">{{data.variable_names[i]}}</label>
+                    <input 
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        id="variable_{{ i }}" 
+                        type="number" 
+                        step = "0.01"
+                        min = "{{data.min}}"
+                        max = "{{data.max}}"
+                        {% if data.default_min: %} 
+                            value = "0" 
+                        {% else: %} 
+                            value = "{{data.min}}"
+                        {% endif %}
+                        name="variable_{{ i }}" 
+                        required>
+                </div>
+                {% endfor %}
+                <div class="flex justify-center items-center">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get the modal
+    var {{type + 'Modal'}} = document.getElementById("{{type + 'Modal'}}");
+
+    // Get the button that opens the modal
+    var {{type + 'Btn'}} = document.getElementById("{{type + 'ModalTrigger'}}");
+
+    // When the user clicks the button, open the modal 
+    {{type + 'Btn'}}.onclick = function() {
+        {{type + 'Modal'}}.classList.remove("hidden");
+    }
+
+    // Add click event listener to the close button
+    {{type + 'CloseButton'}}.addEventListener('click', function(event) {
+        // Prevent default form submission behavior
+        event.preventDefault();
+        
+        // Close the modal
+        {{type + 'Modal'}}.classList.add('hidden');
+    });
+</script>
