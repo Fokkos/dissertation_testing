@@ -92,9 +92,12 @@
   </div>
   <div class="px-2 py-2 overflow-x-scroll">
     <strong>Results</strong>
-    {% if not data.results or not data.candidates or not data.voters or not data.voters[0]['winner'] %}
+    {% if not data.results or not data.candidates or not data.voters or not data.voters[0]['distances'] %}
       <p>No results</p>
     {% else %}
+    {% if data.voters[0]['distances'] |length > 10 %}
+        <p>Too many alternatives to display. Click on a voters name to see full results</p>
+    {% endif %}
     <table class="table-auto">
       <tbody>
         <th class="border">voter</th>
@@ -103,9 +106,8 @@
         {% for voter in data.voters %}
         <tr>
           <td class="border">{{ voter['id'] }}</td>
-          <td class="border"><strong>{{ voter['winner'][0] }}</strong></td>
-          {% for distance in voter['distances'] %}
-            <td class="border">{{ distance }}</td>
+          {% for distance in voter['distances'][:10] %}
+            <td class="border">{{ distance[0][:20] }}: {{ distance[1]|round(4) }} </td>
           {% endfor %}
         </tr>
         {% endfor %}

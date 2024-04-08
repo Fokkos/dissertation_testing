@@ -23,6 +23,7 @@ data = Data()
 def index():
     global data
     error = None
+    refresh = True
     if request.method == 'POST':
         form = request.form
         action = form['form_type']
@@ -46,12 +47,15 @@ def index():
                 data.update_results()
         elif action == 'calculate_distances':
             data.update_results()
+            print(data.results)
         elif action == 'set_variable_names':
             data.update_variable_names(form)
         elif action == 'csv':
             file = request.files.get('file')
             process_csv(file, data)
-    return render_template('index.html', error=error, data=data)
+    if refresh:
+        return render_template('index.html', error=error, data=data)
+    
 
 if __name__ == "__main__":
     app.run(debug=True)

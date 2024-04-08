@@ -2,6 +2,9 @@
     <table class="table-auto">
         <div class="flex space-x-4">
             <h1>{{type.title() + 's'}}</h1>
+            {% if dataset |length > 10 %}
+                <p>Too many {{type}}s to display. <a href="{{ type }}s">View all</a></p>
+            {% endif %}
             <!-- INPUT data -->
             {% with type = type %}
                 {% include 'partials/add_data.html' %}
@@ -11,25 +14,31 @@
             <p>{{'No ' + type + 's'}}</p>
         {% endif %}
         <tbody>
-        {% for datapoint in dataset %}
-        <tr>
+        {% for datapoint in dataset[:10] %}
+        <tr id="row_{{ datapoint["id"] }}">
+            <td>
+                <form action="{{ url_for('index') }}" method="POST">
+                    <input type="hidden" name="form_type" value="{{'delete_' + type}}"/>
+                    <input type="hidden" name="id" value="{{ datapoint["id"] }}"/>
+                    {% for i in range(data.variables) %}
+                    <input type="hidden" name="variable_{{ i }}" value="{{ datapoint[i] }}"/>
+                    {% endfor %}
+                    <button 
+                        class="bg-red-500 hover:bg-red-700 text-black font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline" 
+                        type="submit"
+                        >
+                        <span class="material-icons">delete</span>
+                    </button>
+                </form>
+            </td>
             <td>{{ datapoint['id'] }}: (
             {% for i in range(data.variables) %}
                 {{ datapoint[i] }}{% if not loop.last %}, {% endif %}
             {% endfor %})
-            </td>
-            <td>
-            <form action="{{ url_for('index') }}" method="POST">
-                <input type="hidden" name="form_type" value="{{'delete_' + type}}"/>
-                <input type="hidden" name="id" value="{{ datapoint["id"] }}"/>
-                {% for i in range(data.variables) %}
-                <input type="hidden" name="variable_{{ i }}" value="{{ datapoint[i] }}"/>
-                {% endfor %}
-                <button class="bg-red-500 hover:bg-red-700 text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Delete</button>
-            </form>
             </td>
         </tr>
         {% endfor %}
         </tbody>
     </table>
 </div>
+    

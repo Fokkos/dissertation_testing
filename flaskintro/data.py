@@ -23,7 +23,6 @@ class Data:
             global results
             for voter in self.voters:
                 choose_candidate(self, voter)
-                voter['winner'] = min(voter['distances'], key=lambda x: x[1])
             self.results = True
 
     def update_variable_names(self, form):
