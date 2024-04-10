@@ -7,6 +7,8 @@
     "start": "TAILWIND_MODE=watch craco start"
   },
   "dependencies": {
+    "chart.js": "^4.4.2",
+    "chartjs-chart-pcp": "^4.3.0",
     "flowbite": "^2.3.0",
     "material-symbols": "^0.16.0"
   }

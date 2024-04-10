@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>chart demo</title>
+{% endblock %}
+
+{% block body %}
+  <div>
+    <h1>Chart.js</h1>
+    <button onclick="createChart('radar')">Create Chart</button>
+    <button onclick="createChart('line')">Create Line Chart</button>
+    <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+      <canvas id="myChart" width="300px" length="300px"></canvas>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-pcp"></script>
+
+  <script>
+    //TODO: set y lower limit so there is no whitespace at bottom
+
+
+    let chartInstance = null;
+
+    function createChart(type) {
+      // convert candidates to js object
+      // TODO: add voters & selection of candidates, > 25 data points gets VERY messy lol
+      const candidates = [];
+      // TODO make function generic for both sets of data, literally just rename functions/vars 
+      {% for i in range(data.candidates|length) %}
+        const new_candidate{{i}} = {}; // Create a new object for each iteration
+
+        new_candidate{{i}}.label = '{{ data.candidates[i]['id'] }}';
+        new_candidate{{i}}.fill = false; // removes bg from radar chart
+        new_candidate{{i}}.data = [];
+
+        {% for var in range(data.variables) %}
+          new_candidate{{i}}.data.push(parseFloat('{{ data.candidates[i][var] }}'));
+        {% endfor %} 
+        // by default line is 1 thick
+        new_candidate{{i}}.borderWidth = 1;
+
+        candidates.push(new_candidate{{i}});
+      {% endfor %}
+
+      
+
+      // get variable names, as CSV imports make this an Index which cannot be read
+      variable_names = [];
+      {% for var in data.variable_names %}
+        variable_names.push('{{ var }}');
+      {% endfor %}
+
+      const ctx = document.getElementById('myChart');
+      
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: type,
+        data: {
+          labels: variable_names,
+          datasets: candidates,
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: false
+            }
+          },
+          // adds interactivity to the chart so that when hovered over, the line becomes thicker
+          onHover: (e, activeEls, chart) => {
+            if (activeEls.length === 0) {
+              chart.data.datasets.forEach((dataset) => {
+                dataset.borderWidth = 1; // by default line is 1 thick
+                // sets original colour of the line to be refered back to after transparancy is set
+                if (dataset.orginalColor == null) { 
+                  dataset.orginalColor = dataset.borderColor;
+                }
+                // by default (non-hover), line is opaque so just set to original colour
+                dataset.borderColor = dataset.orginalColor;
+              });
+
+              chart.update();
+              return;
+            }
+
+            const hoveredEl = chart.getElementsAtEventForMode(e, 'point', {
+              intersect: true
+            }, true)[0]
+
+            chart.data.datasets.forEach((dataset, i) => {
+              dataset.borderWidth = hoveredEl.datasetIndex === i ? 4 : 1;
+              dataset.z = hoveredEl.datasetIndex === i ? 1 : 0; // Set z-index
+              // to get transparency for other colours, need to convert to hex then add alpha value of '20'
+              var rgb = dataset.orginalColor.match(/\d+/g);
+              var hex = '#' + parseInt(rgb[0]).toString(16)+ parseInt(rgb[1]).toString(16)+parseInt(rgb[2]).toString(16) + '20';
+              // if the data is being hovered over, keep colour same, else make it transparent
+              dataset.borderColor = hoveredEl.datasetIndex === i ? dataset.orginalColor : hex;
+            });
+            // update the datapoints on the chart
+            chart.update();
+          },
+          // adds interactivity to the legend so that when hovered over, the line becomes thicker
+          plugins: {
+            legend: {
+              onHover: (e, legendItem, legend) => {
+                updateChart(legendItem);
+              },
+              // when the mouse leaves the legend, reset the chart to default
+              onLeave: () => {
+                chartInstance.data.datasets.forEach((dataset) => {
+                  dataset.borderWidth = 1; // by default line is 1 thick
+                  dataset.borderColor = dataset.orginalColor;
+                });
+                chartInstance.update();
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // essentially the same code as the onHover function, but this time it is for the legend as it has different available elements :P
+    function updateChart(legendItem) {
+      chartInstance.data.datasets.forEach((dataset, i) => {
+        if (dataset.orginalColor == null) {
+          dataset.orginalColor = dataset.borderColor;
+        }
+        dataset.borderWidth = legendItem.datasetIndex === i ? 4 : 1;
+        dataset.z = legendItem.datasetIndex === i ? 1 : 0; // Set z-index
+        var rgb = dataset.orginalColor.match(/\d+/g);
+        var hex = '#' + parseInt(rgb[0]).toString(16)+ parseInt(rgb[1]).toString(16)+parseInt(rgb[2]).toString(16) + '20';
+        dataset.borderColor = legendItem.datasetIndex === i ? dataset.orginalColor : hex;
+      });
+      chartInstance.update();
+    }
+
+  </script>
+{% endblock %}

@@ -64,5 +64,9 @@ def voters():
 def candidates():
     return render_template('viewall.html', variables=data.variables, dataset=data.candidates, type='candidate')
 
+@app.get('/chart-test')
+def chart_test():
+    return render_template('chart_test.html', data=data)
+
 if __name__ == "__main__":
     app.run(debug=True)
