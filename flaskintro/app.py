@@ -56,6 +56,13 @@ def index():
     if refresh:
         return render_template('index.html', error=error, data=data)
     
+@app.get('/voters')
+def voters():
+    return render_template('viewall.html', variables=data.variables, dataset=data.voters, type='voter')
+
+@app.get('/candidates')
+def candidates():
+    return render_template('viewall.html', variables=data.variables, dataset=data.candidates, type='candidate')
 
 if __name__ == "__main__":
     app.run(debug=True)
