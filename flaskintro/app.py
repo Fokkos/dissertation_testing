@@ -17,6 +17,8 @@ data = Data()
 # TODO - add a settings modal for num of variables and var names. material symbols settings
 # TODO - look into WebGL for rendering visualizations
 # TODO - let user decide which 3 properties to use as axes in a 3d space
+# TODO - Select all option for chartjs modal
+# TODO - move chartjs modal to index
 # https://threejs.org/docs/index.html#manual/en/introduction/Drawing-lines
 
 @app.route('/', methods=['GET', 'POST'])

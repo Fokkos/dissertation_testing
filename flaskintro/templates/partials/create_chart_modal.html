@@ -29,7 +29,9 @@
                     <p><strong>Choose up to 25 voters and/or candidates to compare</strong></p>
                     <p id="data_counter" class="ml-2">0/25</p>
                 </div>
-                <div class="flex">
+                <div 
+                    id="data_selection"
+                    class="flex">
                     <div
                         id="left_column"
                         class="w-1/2"
@@ -74,6 +76,19 @@
                             {% endfor %}
                         </div>
                     </div>
+                </div>
+                <div class="flex justify-center">
+                    <p><strong>Choose up to 15 variables to use</strong></p>
+                </div>
+                <div>
+                    {% for var in range(data.variables) %}
+                    <div class="flex justify-center">
+                        <div class="w-1/2 flex justify-start">
+                            <input type="checkbox" id="variable_{{ var }}" name="variable_{{ var }}" value="{{ var }}" class="m-2" >
+                            <label for="variable_{{ var }}">{{ data.variable_names[var] }}</label>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
                 <div class="flex justify-center items-center">
                     <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Submit</button>
