@@ -1,0 +1,185 @@
+<!-- Modal -->
+<div id="graphModal" class="modal hidden fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center w-screen">
+    <div class="modal-content bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <!-- Form -->
+        <div class="mb-4 flex items-center justify-between">
+            <h5 class="modal-title text-xl font-semibold">Create a graph</h5>
+            <button
+                class="close-modal flex justify-center rounded border border-gray-300 bg-[--background] hover:bg-red-400"
+                id="graphModalCloseBtn"
+                aria-label="Close modal"
+                title="Close modal"
+                onclick(graphModal.classList.add("hidden");)
+                ><span class="material-icons">close</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form onsubmit="processData(this)">
+                <div class="flex justify-center">
+                    <p><strong>Choose type of graph</strong></p>
+                </div>
+                <!-- radio for pcp or radar -->
+                <div class="flex justify-center space-x-4 p-y-1">
+                    <input type="radio" id="pcp" name="graph_type" value="line" checked>
+                    <label for="pcp">Parallel Coordinate Plot</label>
+                    <input type="radio" id="radar" name="graph_type" value="radar">
+                    <label for="radar">Radar Chart</label>
+                </div>
+                <div class='w-[60rem] flex justify-center'>
+                    <p><strong>Choose up to 25 voters and/or candidates to compare</strong></p>
+                    <p id="data_counter" class="ml-2">0/25</p>
+                </div>
+                <div class="flex">
+                    <div
+                        id="left_column"
+                        class="w-1/2"
+                    >
+                        <div class="flex justify-center">
+                            <p>Candidates</p>
+                        </div>
+                        <div class="max-h-52 overflow-y-scroll">
+                            {% for candidate in data.candidates %}
+                                <div class="flex justify-items-start">
+                                    <input 
+                                        class="m-2" 
+                                        type="checkbox" 
+                                        id="candidate_{{ candidate['id'] }}" 
+                                        name="candidate_{{ candidate['id'] }}" 
+                                        value="{{ candidate['id'] }}"
+                                        onclick="updateDataCounter('candidate_{{ candidate['id'] }}')">
+                                    <label for="{{ candidate['id'] }}">{{ candidate['id'] }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div
+                        id="right_column"
+                        class="w-1/2"
+                    >
+                        <div class="flex justify-center">
+                            <p>Voters</p>
+                        </div>
+                        <div class="max-h-52 overflow-y-scroll">
+                            {% for voter in data.voters %}
+                                <div class="flex justify-items-start">
+                                    <input 
+                                        class="m-2" 
+                                        type="checkbox" 
+                                        id="voter_{{ voter['id'] }}" 
+                                        name="voter_{{ voter['id'] }}" 
+                                        value="{{ voter['id'] }}"
+                                        onclick="updateDataCounter('voter_{{ voter['id'] }}')">
+                                    <label for="{{ voter['id'] }}">{{ voter['id'] }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-center items-center">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get the modal
+    var graphModal = document.getElementById("graphModal");
+
+    // Get the button that opens the modal
+    var graphModalBtn = document.getElementById("graphModalTrigger");
+
+    // When the user clicks the button, open the modal 
+    graphModalBtn.onclick = function() {
+    graphModal.classList.remove("hidden");
+    }
+
+    // Add click event listener to the close button
+    graphModalCloseBtn.addEventListener('click', function(event) {
+        // Prevent default form submission behavior
+        event.preventDefault();
+        
+        // Close the modal
+        graphModal.classList.add('hidden');
+    });
+
+    // prints out all selected data
+    function processData(form) {
+        // prevents the default GET request
+        event.preventDefault();
+
+        console.log("Processing data...");
+        
+        selectedData = [];
+        // loop through all the checkboxes and print out the selected ones
+        {% for candidate in data.candidates %}
+            if (form.elements['candidate_{{ candidate["id"] }}'].checked) {
+                {% set id = loop.index %} // use Jinja2 loop.index to keep track of the iteration for unique variable names
+
+                let new_candidate{{ id }} = {}; // Create a new object for each iteration
+                new_candidate{{ id }}.label = "{{ candidate['id'] }}";
+                new_candidate{{ id }}.fill = false; // removes bg from radar chart
+                new_candidate{{ id }}.data = [];
+                new_candidate{{ id }}.borderWidth = 1;
+
+                {% for var in range(data.variables) %}
+                new_candidate{{ id }}.data.push(parseFloat('{{ candidate[var] }}'));
+                {% endfor %}
+
+                selectedData.push(new_candidate{{ id }});
+
+                console.log(new_candidate{{ id }});
+            }
+        {% endfor %}
+        {% for voter in data.voters %}
+            if (form.elements['voter_{{ voter["id"] }}'].checked) {
+                {% set id = loop.index %} // use Jinja2 loop.index to keep track of the iteration for unique variable names
+
+                let new_voter{{ id }} = {}; // Create a new object for each iteration
+                new_voter{{ id }}.label = "{{ voter['id'] }}";
+                new_voter{{ id }}.fill = false; // removes bg from radar chart
+                new_voter{{ id }}.data = [];
+                new_voter{{ id }}.borderWidth = 1;
+
+                {% for var in range(data.variables) %}
+                    new_voter{{ id }}.data.push(parseFloat('{{ voter[var] }}'));
+                {% endfor %}
+
+                selectedData.push(new_voter{{ id }});
+            }
+        {% endfor %}
+
+        console.log(selectedData);
+
+        // close the modal
+        graphModal.classList.add('hidden');
+
+        // get type of graph
+        var graph_type = form.elements['graph_type'].value;
+
+        // create the chart
+        createChart(graph_type, selectedData);
+    }
+
+    // counter to keep track of the number of candidates and voters selected
+    var counter = 0;
+    // used to make sure that the counter is updated correctly
+    function updateDataCounter(id){
+        // check if the checkbox is checked or not and update the counter accordingly
+        if (document.getElementById(id).checked) {
+            counter++;
+        } else {
+            counter--;
+        }
+        if (counter > 25) {
+            alert("Too many candidates and voters selected. Please select less than 25.");
+            document.getElementById(id).checked = false;
+            counter--;
+        }
+
+        // update the counter
+        data_counter = document.getElementById("data_counter");
+        data_counter.innerHTML = counter + "/25";
+    }
+</script>

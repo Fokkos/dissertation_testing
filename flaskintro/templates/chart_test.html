@@ -9,42 +9,42 @@
     <h1>Chart.js</h1>
     <button onclick="createChart('radar')">Create Chart</button>
     <button onclick="createChart('line')">Create Line Chart</button>
+    
+    <!-- Modal Trigger Button -->
+    <!-- Button and modal have to be seperated so that the modal is drawn on top of the canvas -->
+    <button 
+      id="graphModalTrigger" 
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline min-h-7 min-w-7">
+      Create PCP or Radar Chart
+    </button>
+
+    <!-- Canvas to display the chart.js visualisation -->
     <div class="chart-container" style="position: relative; height:40vh; width:80vw">
       <canvas id="myChart" width="300px" length="300px"></canvas>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-pcp"></script>
+  <!-- The 'create chart' modal to be rendered after the canvas -->
+  {% include 'partials/create_chart_modal.html' %}
 
   <script>
-    //TODO: set y lower limit so there is no whitespace at bottom
-
-
+    // initially there is no chart instance
     let chartInstance = null;
 
-    function createChart(type) {
-      // convert candidates to js object
-      // TODO: add voters & selection of candidates, > 25 data points gets VERY messy lol
-      const candidates = [];
-      // TODO make function generic for both sets of data, literally just rename functions/vars 
-      {% for i in range(data.candidates|length) %}
-        const new_candidate{{i}} = {}; // Create a new object for each iteration
+    function checkDataSize() {
+      // check if the data is too large to be displayed
+      if ({{ data.variables }} > 15) {
+        alert("Too many variables to display, please select less than 15");
+        return false;
+      }
+      return true;
+    }
 
-        new_candidate{{i}}.label = '{{ data.candidates[i]['id'] }}';
-        new_candidate{{i}}.fill = false; // removes bg from radar chart
-        new_candidate{{i}}.data = [];
-
-        {% for var in range(data.variables) %}
-          new_candidate{{i}}.data.push(parseFloat('{{ data.candidates[i][var] }}'));
-        {% endfor %} 
-        // by default line is 1 thick
-        new_candidate{{i}}.borderWidth = 1;
-
-        candidates.push(new_candidate{{i}});
-      {% endfor %}
-
-      
+    function createChart(type, selectedData) {
+      // if the data is too large, don't create the chart
+      if (!checkDataSize()) {
+        return;
+      }
 
       // get variable names, as CSV imports make this an Index which cannot be read
       variable_names = [];
@@ -62,7 +62,7 @@
         type: type,
         data: {
           labels: variable_names,
-          datasets: candidates,
+          datasets: selectedData,
         },
         options: {
           scales: {
