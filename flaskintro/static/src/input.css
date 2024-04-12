@@ -6,3 +6,11 @@
   max-height: calc(100vh - 210px);
   overflow-y: auto;
 }
+
+.modal {
+  z-index: 100;
+}
+
+.chart-container{
+  z-index: 10;
+}
