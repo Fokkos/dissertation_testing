@@ -17,8 +17,6 @@ data = Data()
 # TODO - add a settings modal for num of variables and var names. material symbols settings
 # TODO - look into WebGL for rendering visualizations
 # TODO - let user decide which 3 properties to use as axes in a 3d space
-# TODO - Select all option for chartjs modal
-# TODO - move chartjs modal to index
 # https://threejs.org/docs/index.html#manual/en/introduction/Drawing-lines
 
 @app.route('/', methods=['GET', 'POST'])
@@ -65,10 +63,6 @@ def voters():
 @app.get('/candidates')
 def candidates():
     return render_template('viewall.html', variables=data.variables, dataset=data.candidates, type='candidate')
-
-@app.get('/chart-test')
-def chart_test():
-    return render_template('chart_test.html', data=data)
 
 if __name__ == "__main__":
     app.run(debug=True)
