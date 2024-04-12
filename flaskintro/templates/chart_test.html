@@ -31,25 +31,15 @@
     // initially there is no chart instance
     let chartInstance = null;
 
-    function checkDataSize() {
-      // check if the data is too large to be displayed
-      if ({{ data.variables }} > 15) {
-        alert("Too many variables to display, please select less than 15");
-        return false;
-      }
-      return true;
-    }
-
-    function createChart(type, selectedData) {
-      // if the data is too large, don't create the chart
-      if (!checkDataSize()) {
-        return;
-      }
+    function createChart(type, selectedData, selectedVariables) {
 
       // get variable names, as CSV imports make this an Index which cannot be read
       variable_names = [];
-      {% for var in data.variable_names %}
-        variable_names.push('{{ var }}');
+
+      {% for var in range(data.variables) %}
+        if (selectedVariables.includes({{ var }})) {
+          variable_names.push('{{ data.variable_names[var] }}');
+        }
       {% endfor %}
 
       const ctx = document.getElementById('myChart');

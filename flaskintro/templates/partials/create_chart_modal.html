@@ -79,12 +79,19 @@
                 </div>
                 <div class="flex justify-center">
                     <p><strong>Choose up to 15 variables to use</strong></p>
+                    <p id="variable_counter" class="ml-2">0/15</p>
                 </div>
                 <div>
                     {% for var in range(data.variables) %}
                     <div class="flex justify-center">
                         <div class="w-1/2 flex justify-start">
-                            <input type="checkbox" id="variable_{{ var }}" name="variable_{{ var }}" value="{{ var }}" class="m-2" >
+                            <input 
+                                type="checkbox" 
+                                id="variable_{{ var }}" 
+                                name="variable_{{ var }}" 
+                                value="{{ var }}" 
+                                class="m-2" 
+                                onclick="updateVariableCounter('variable_{{ var }}')">
                             <label for="variable_{{ var }}">{{ data.variable_names[var] }}</label>
                         </div>
                     </div>
@@ -126,6 +133,23 @@
 
         console.log("Processing data...");
         
+        // get selected variables
+        selectedVariables = getVariables(form);
+
+        // get candidate and voter data
+        selectedData = getData(form, selectedVariables);
+
+        // close the modal
+        graphModal.classList.add('hidden');
+
+        // get type of graph
+        var graph_type = form.elements['graph_type'].value;
+
+        // create the chart
+        createChart(graph_type, selectedData, selectedVariables);
+    }
+
+    function getData(form, selectedVariables) {
         selectedData = [];
         // loop through all the checkboxes and print out the selected ones
         {% for candidate in data.candidates %}
@@ -139,12 +163,12 @@
                 new_candidate{{ id }}.borderWidth = 1;
 
                 {% for var in range(data.variables) %}
-                new_candidate{{ id }}.data.push(parseFloat('{{ candidate[var] }}'));
+                    if (selectedVariables.includes({{ var }})) {
+                        new_candidate{{ id }}.data.push(parseFloat('{{ candidate[var] }}'));
+                    }
                 {% endfor %}
 
                 selectedData.push(new_candidate{{ id }});
-
-                console.log(new_candidate{{ id }});
             }
         {% endfor %}
         {% for voter in data.voters %}
@@ -158,43 +182,68 @@
                 new_voter{{ id }}.borderWidth = 1;
 
                 {% for var in range(data.variables) %}
-                    new_voter{{ id }}.data.push(parseFloat('{{ voter[var] }}'));
+                    if (selectedVariables.includes({{ var }})) {
+                        new_voter{{ id }}.data.push(parseFloat('{{ voter[var] }}'));
+                    }
                 {% endfor %}
 
                 selectedData.push(new_voter{{ id }});
             }
         {% endfor %}
+        return selectedData;
+    }
 
-        console.log(selectedData);
+    function getVariables(form) {
+        selectedVariables = [];
+        {% for var in range(data.variables) %}
+            if (form.elements['variable_{{ var }}'].checked) {
+                selectedVariables.push({{ var }});
+            }
+        {% endfor %}
 
-        // close the modal
-        graphModal.classList.add('hidden');
-
-        // get type of graph
-        var graph_type = form.elements['graph_type'].value;
-
-        // create the chart
-        createChart(graph_type, selectedData);
+        console.log(selectedVariables);
+        return selectedVariables;
     }
 
     // counter to keep track of the number of candidates and voters selected
-    var counter = 0;
+    var dataCounter = 0;
     // used to make sure that the counter is updated correctly
     function updateDataCounter(id){
         // check if the checkbox is checked or not and update the counter accordingly
         if (document.getElementById(id).checked) {
-            counter++;
+            dataCounter++;
         } else {
-            counter--;
+            dataCounter--;
         }
-        if (counter > 25) {
+        if (dataCounter > 25) {
             alert("Too many candidates and voters selected. Please select less than 25.");
             document.getElementById(id).checked = false;
-            counter--;
+            dataCounter--;
         }
 
         // update the counter
         data_counter = document.getElementById("data_counter");
-        data_counter.innerHTML = counter + "/25";
+        data_counter.innerHTML = dataCounter + "/25";
+    }
+
+    // counter to keep track of number of variables to use
+    var variableCounter = 0;
+    // used to make sure that the counter is updated correctly
+    function updateVariableCounter(id){
+        // check if the checkbox is checked or not and update the counter accordingly
+        if (document.getElementById(id).checked) {
+            variableCounter++;
+        } else {
+            variableCounter--;
+        }
+        if (variableCounter > 15) {
+            alert("Too many variables selected. Please select less than 15.");
+            document.getElementById(id).checked = false;
+            variableCounter--;
+        }
+
+        // update the counter
+        variable_counter = document.getElementById("variable_counter");
+        variable_counter.innerHTML = variableCounter + "/15";
     }
 </script>
