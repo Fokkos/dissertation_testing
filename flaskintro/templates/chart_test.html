@@ -31,11 +31,11 @@
     // initially there is no chart instance
     let chartInstance = null;
 
+    // Updates the canvas with the selected data and variables and creates a radar or pcp chart using Chart.JS
     function createChart(type, selectedData, selectedVariables) {
-
       // get variable names, as CSV imports make this an Index which cannot be read
       variable_names = [];
-
+      // using the form data, get the names of the variables selected via the python array w/ Jinja2
       {% for var in range(data.variables) %}
         if (selectedVariables.includes({{ var }})) {
           variable_names.push('{{ data.variable_names[var] }}');

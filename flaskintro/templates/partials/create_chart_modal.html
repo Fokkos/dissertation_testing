@@ -126,7 +126,7 @@
         graphModal.classList.add('hidden');
     });
 
-    // prints out all selected data
+    // process the data of the modal and prepare it for chart creation
     function processData(form) {
         // prevents the default GET request
         event.preventDefault();
@@ -136,13 +136,26 @@
         // get selected variables
         selectedVariables = getVariables(form);
 
-        // get candidate and voter data
+        // get selected candidate and voter data
         selectedData = getData(form, selectedVariables);
+
+        // for alerts, data is done first as that appears first in the modal
+        // make sure at least 1 candidate or voter is selected
+        if (selectedData.length < 1){
+            alert("Please select at least 1 candidate or voter to view.");
+            return;
+        }
+
+        // make sure at least 2 variables are selected
+        if (selectedVariables.length < 2){
+            alert("Please select at least 2 variables to view.");
+            return;
+        }
 
         // close the modal
         graphModal.classList.add('hidden');
 
-        // get type of graph
+        // get type of graph to generate
         var graph_type = form.elements['graph_type'].value;
 
         // create the chart
@@ -151,10 +164,13 @@
 
     function getData(form, selectedVariables) {
         selectedData = [];
-        // loop through all the checkboxes and print out the selected ones
+        // loop through all the checkboxes and process each candidate and voter selected
         {% for candidate in data.candidates %}
             if (form.elements['candidate_{{ candidate["id"] }}'].checked) {
-                {% set id = loop.index %} // use Jinja2 loop.index to keep track of the iteration for unique variable names
+                // use Jinja2 loop.index to keep track of the iteration for unique variable names
+                // have to set as an id as getting variable data creates an inner loop
+                // which resets the loop.index
+                {% set id = loop.index %} 
 
                 let new_candidate{{ id }} = {}; // Create a new object for each iteration
                 new_candidate{{ id }}.label = "{{ candidate['id'] }}";
@@ -167,13 +183,15 @@
                         new_candidate{{ id }}.data.push(parseFloat('{{ candidate[var] }}'));
                     }
                 {% endfor %}
-
+                
+                // since candidates and voters are the SAME format, they can just be collected into a single array
                 selectedData.push(new_candidate{{ id }});
             }
         {% endfor %}
         {% for voter in data.voters %}
             if (form.elements['voter_{{ voter["id"] }}'].checked) {
-                {% set id = loop.index %} // use Jinja2 loop.index to keep track of the iteration for unique variable names
+                
+                {% set id = loop.index %} 
 
                 let new_voter{{ id }} = {}; // Create a new object for each iteration
                 new_voter{{ id }}.label = "{{ voter['id'] }}";
@@ -193,6 +211,7 @@
         return selectedData;
     }
 
+    // gets the selected variables from the modal and returns an array of ids
     function getVariables(form) {
         selectedVariables = [];
         {% for var in range(data.variables) %}
