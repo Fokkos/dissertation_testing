@@ -29,9 +29,9 @@
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="x">{{data.variable_names[i]}}</label>
                     <input 
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 thumb:bg-blue-500"
                         id="variable_{{ i }}" 
-                        type="number" 
+                        type="range" 
                         step = "0.01"
                         min = "{{data.min}}"
                         max = "{{data.max}}"
@@ -41,7 +41,9 @@
                             value = "{{data.min}}"
                         {% endif %}
                         name="variable_{{ i }}" 
+                        oninput="this.nextElementSibling.value = this.value"
                         required>
+                    <output>0</output>
                 </div>
                 {% endfor %}
                 <div class="flex justify-center items-center">

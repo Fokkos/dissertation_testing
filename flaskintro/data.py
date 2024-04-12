@@ -8,8 +8,8 @@ class Data:
         self.distance_measure = 'euclidean'
         self.results = False
         self.variable_names = ['x', 'y']
-        self.max = float('inf')
-        self.min = float('-inf')
+        self.min = 0
+        self.max = 10
         self.default_min = True
 
     def assign_default_variable_names(self):
@@ -63,7 +63,7 @@ class Data:
         self.voters = []
         self.variable_names = []
         self.results = False
-        self.max = float('inf')
-        self.min = float('-inf')
+        self.max = 10
+        self.min = 0
 
     
