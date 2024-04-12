@@ -34,10 +34,18 @@
                     class="flex">
                     <div
                         id="left_column"
-                        class="w-1/2"
+                        class="w-1/2 border-y-2 border-l-2 border-r-1 rounded-l-lg"
                     >
-                        <div class="flex justify-center">
-                            <p>Candidates</p>
+                        <p class='mx-3'>Candidates</p>
+                        <div class="flex justify-items-start border-y-2">
+                            <input 
+                                class="m-2" 
+                                type="checkbox" 
+                                id="select_all_candidate" 
+                                name="select_all_candidate" 
+                                value="select_all_candidate"
+                                onclick="selectAll('candidate')">
+                            <label for="select_all_candidate">Select all</label>
                         </div>
                         <div class="max-h-52 overflow-y-scroll">
                             {% for candidate in data.candidates %}
@@ -56,10 +64,18 @@
                     </div>
                     <div
                         id="right_column"
-                        class="w-1/2"
+                        class="w-1/2 border-y-2 border-l-2 border-r-2 rounded-r-lg"
                     >
-                        <div class="flex justify-center">
-                            <p>Voters</p>
+                        <p class='mx-3'>Voters</p>
+                        <div class="flex justify-items-start border-y-2">
+                            <input 
+                                class="m-2" 
+                                type="checkbox" 
+                                id="select_all_voter" 
+                                name="select_all_voter" 
+                                value="select_all_voter"
+                                onclick="selectAll('voter')">
+                            <label for="select_all_voter">Select all</label>
                         </div>
                         <div class="max-h-52 overflow-y-scroll">
                             {% for voter in data.voters %}
@@ -77,28 +93,48 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex justify-center">
-                    <p><strong>Choose up to 15 variables to use</strong></p>
-                    <p id="variable_counter" class="ml-2">0/15</p>
-                </div>
-                <div>
-                    {% for var in range(data.variables) %}
-                    <div class="flex justify-center">
-                        <div class="w-1/2 flex justify-start">
-                            <input 
-                                type="checkbox" 
-                                id="variable_{{ var }}" 
-                                name="variable_{{ var }}" 
-                                value="{{ var }}" 
-                                class="m-2" 
-                                onclick="updateVariableCounter('variable_{{ var }}')">
-                            <label for="variable_{{ var }}">{{ data.variable_names[var] }}</label>
+                <div class='flex justify-center'>
+                    <div class='w-1/2 border-x-2 border-b-2 rounded-b-lg'>
+                        <div class="flex justify-center">
+                            <p><strong>Choose up to 15 variables to use</strong></p>
+                            <p id="variable_counter" class="ml-2">0/15</p>
+                        </div>
+                        <div>
+                            <div class="flex justify-items-start border-y-2">
+                                <input 
+                                    class="m-2" 
+                                    type="checkbox" 
+                                    id="select_all_graph_variable" 
+                                    name="select_all_graph_variable" 
+                                    value="select_all_graph_variable"
+                                    onclick="selectAll('graph_variable')">
+                                <label for="select_all_graph_variable">Select all</label>
+                            </div>
+                            <div class="max-h-52 overflow-y-scroll">
+                                {% for var in range(data.variables) %}
+                                <div class="flex justify-center">
+                                    <div class="w-1/2 flex justify-start">
+                                        <input 
+                                            type="checkbox" 
+                                            id="graph_variable_{{ var }}" 
+                                            name="variable_{{ var }}" 
+                                            value="{{ var }}" 
+                                            class="m-2" 
+                                            onclick="updateVariableCounter('graph_variable_{{ var }}')">
+                                        <label for="variable_{{ var }}">{{ data.variable_names[var] }}</label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
-                    {% endfor %}
                 </div>
-                <div class="flex justify-center items-center">
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Submit</button>
+                <div class='flex justify-center'>
+                    <div class='w-1/2'>
+                        <div class="flex justify-center items-center my-2">
+                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Submit</button>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -130,8 +166,6 @@
     function processData(form) {
         // prevents the default GET request
         event.preventDefault();
-
-        console.log("Processing data...");
         
         // get selected variables
         selectedVariables = getVariables(form);
@@ -220,7 +254,6 @@
             }
         {% endfor %}
 
-        console.log(selectedVariables);
         return selectedVariables;
     }
 
@@ -264,5 +297,57 @@
         // update the counter
         variable_counter = document.getElementById("variable_counter");
         variable_counter.innerHTML = variableCounter + "/15";
+    }
+
+    function selectAll(type) {
+        // get all the checkboxes of the type
+        checkboxes = document.querySelectorAll(`input[type=checkbox][id^=${type}]`);
+        // get the select all checkbox
+        select_all = document.getElementById(`select_all_${type}`);
+        // check if the select all checkbox is checked or not
+        if (select_all.checked && 
+            (type === 'candidate' || type === 'voter') && 
+            dataCounter + checkboxes.length > 25) {
+                alert('Selecting all would exceed the limit of 25. Please select less than 25.')
+                select_all.checked = false;
+                return;
+        }
+        // make sure that 15 or less variables are selected
+        else if (select_all.checked &&
+            type === 'graph_variable' &&
+            checkboxes.length > 15) {
+                alert('Selecting all would exceed the limit of 15. Please select less than 15.')
+                select_all.checked = false;
+                return;
+        }
+        else if (select_all.checked) {
+            // loop through all the checkboxes and check them
+            checkboxes.forEach((checkbox) => {
+                // only check the checkbox if it is unchecked, otherwise the counter updates twice
+                if (checkbox.checked === false) {
+                    checkbox.checked = true;
+                    // update the relevant counter
+                    if (type === 'candidate' || type === 'voter') {
+                        updateDataCounter(checkbox.id);
+                    } else {
+                        updateVariableCounter(checkbox.id);
+                    }
+                }
+            });
+        } else {
+            // loop through all the checkboxes and uncheck them
+            checkboxes.forEach((checkbox) => {
+                // only deselect the checkbox if it is checked, otherwise the counter updates twice
+                if (checkbox.checked === true) {
+                    checkbox.checked = false;
+                    // update the relevant counter
+                    if (type === 'candidate' || type === 'voter') {
+                        updateDataCounter(checkbox.id);
+                    } else {
+                        updateVariableCounter(checkbox.id);
+                    }
+                }
+            });
+        }
     }
 </script>
