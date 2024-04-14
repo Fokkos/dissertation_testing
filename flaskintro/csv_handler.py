@@ -8,7 +8,7 @@ def process_csv(file, data):
     # 2. get the columns
     columns = df.columns
     # assume first column is name
-    variable_names = columns[1:]
+    variable_names = columns[1:].values.tolist()
     # 3. update variable count to columns - 1 (account for name)
     data.variables = len(variable_names)
     # 4. update variable names to column names
