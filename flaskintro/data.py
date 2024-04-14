@@ -45,8 +45,7 @@ class Data:
         elif type == 'voter':
             # if there are results, remove them so that the voter can be found for deletion
             for voter in self.voters:
-                if 'winner' in voter:
-                    del voter['winner']
+                if 'distances' in voter:
                     del voter['distances']
             self.voters.remove(point)
         self.results = False
