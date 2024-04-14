@@ -12,11 +12,10 @@
 <div class="w-full flex justify-center ">
   <div class="max-w-s px-2">
     <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" 
-    action="{{ url_for('index') }}" 
-    method="POST"
+    action="{{ url_for('set_variables') }}" 
+    method="post"
     onsubmit="return confirm('This will delete voter and candidate data, are you sure?');">
       <h2>Change num of variables</h2>
-      <input type="hidden" name="form_type" value="set_variables"/>
       <div class="mb-1 flex">
         <input 
           class="shadow appearance-none border rounded w-3/5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
@@ -35,9 +34,8 @@
   </div>
   <!--Create dropdown with options for the distance measure -->
   <div class="max-w-s px-2">
-    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" action="{{ url_for('index') }}" method="POST">
+    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" action="{{ url_for('set_distance_measure') }}" method="POST">
       <h2>Change distance measure</h2>
-      <input type="hidden" name="form_type" value="set_distance_measure"/>
       <div class="mb-1 flex">
         <select class="shadow appearance-none border rounded w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="distance_measure" name="distance_measure" onchange="this.form.submit()">
           <option value="euclidean" {% if data.distance_measure == 'euclidean' %} selected {% endif %}>Euclidean</option>
@@ -49,13 +47,12 @@
   </div>
   <div class="max-w-s px-2">
     <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-2" 
-    action="{{ url_for('index') }}" 
+    action="{{ url_for('csv') }}" 
     method="post" 
     enctype="multipart/form-data"
     onsubmit="return confirm('This will delete voter and candidate data, are you sure?');">
       <h2>Upload CSV Candidates</h2>
       <input type="file" name="file" accept=".csv" required>
-      <input type="hidden" name="form_type" value="csv"/>
       <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
         Upload
       </button>
@@ -65,8 +62,7 @@
   {% include 'partials/edit_var_names.html' %}
   <!-- CALCULATE distances -->
   <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" >
-    <form action="{{ url_for('index') }}" method="POST">
-      <input type="hidden" name="form_type" value="calculate_distances"/>
+    <form action="{{ url_for('calculate_distances') }}" method="post">
       <div class="flex justify-center items-center">
         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
           Calculate

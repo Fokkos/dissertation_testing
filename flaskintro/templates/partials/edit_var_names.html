@@ -22,8 +22,7 @@
                     ><span class="material-icons">close</span>
                 </button>
             </div>
-            <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" action="{{ url_for('index') }}" method="POST">
-                <input type="hidden" name="form_type" value="set_variable_names"/>
+            <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" action="{{ url_for('set_variable_names') }}" method="POST">
                 {% for i in range(data.variables) %}
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="x">
