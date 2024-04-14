@@ -21,15 +21,15 @@ def process_csv(file, data):
             candidate[j] = format(float(df.iloc[i, j + 1]), ".2f")
         data.candidates.append(candidate)
 
-    #print("processing csv")
-    #print(df)
     # set maximum value for sliders
     data.max = math.ceil(df.max(numeric_only=True).max())
-    print(data.max)
     # set minimum value for sliders
     data.min = math.floor(df.min(numeric_only=True).min())
-    print(data.min)
     data.default_min = False
+
+    # create new average voter
+    data.average_voter = data.create_average_voter()
+    
     return df
 
 

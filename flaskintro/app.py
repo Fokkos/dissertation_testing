@@ -59,6 +59,7 @@ def set_variables():
     form = request.form
     data.variables = int(form['variables'])
     data.assign_default_variable_names()
+    data.average_voter = data.create_average_voter()
     return redirect(url_for('index'))
 
 # route to set variable names

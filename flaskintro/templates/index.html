@@ -99,6 +99,13 @@
         <th class="border">voter</th>
         <th class="border">winner</th>
         <th class="border">full results</th>
+        <!-- show average voter -->
+        <tr>
+          <td class="border">Average voter</td>
+          {% for distance in data.average_voter['distances'][:10] %}
+            <td class="border">{{ distance[0][:20] }}: {{ distance[1]|round(4) }} </td>
+          {% endfor %}
+        </tr>
         {% for voter in data.voters %}
         <tr>
           <td class="border">{{ voter['id'] }}</td>
