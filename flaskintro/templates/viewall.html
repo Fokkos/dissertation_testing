@@ -6,9 +6,18 @@
 
 {% block body %}
 <table class="table-auto">
-    <h1>All {{ type }}s <strong>insert search bar here</strong></h1>
+    <h1>All {{ type }}s</h1>
+    <form class="flex">   
+        <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+        <div class="flex">
+            <input type="search" id="default-search" class="block w-full max-w-[300px] p-2 ps-3 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" placeholder="Search for {{type}}" name='name' required />
+            <button type="submit" class=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                <span class="material-icons text-white text-ce">search</span>
+            </button>
+        </div>
+    </form>
     {% if not dataset %}
-        <p>{{'No ' + type + 's'}}</p>
+        <p>No {{type}}s found</p>
     {% else %}
     <tbody>
         <th class="border"></th>

@@ -102,12 +102,22 @@ def csv():
 @app.get('/voters')
 def voters():
     global data
-    return render_template('viewall.html', variables=data.variables, dataset=data.voters, data=data, type='voter')
+    query = request.args.get('name')
+    if query:
+        voters = [voter for voter in data.voters if query in voter['id']]
+    else:
+        voters = data.voters
+    return render_template('viewall.html', variables=data.variables, dataset=voters, data=data, type='voter')
 
 @app.get('/candidates')
 def candidates():
     global data
-    return render_template('viewall.html', variables=data.variables, dataset=data.candidates, data=data, type='candidate')
+    query = request.args.get('name')
+    if query:
+        candidates = [candidate for candidate in data.candidates if query in candidate['id']]
+    else:
+        candidates = data.candidates
+    return render_template('viewall.html', variables=data.variables, dataset=candidates, data=data, type='candidate')
 
 # Results page
 @app.get('/results')
