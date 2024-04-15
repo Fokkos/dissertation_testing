@@ -33,7 +33,7 @@
                     <form action="{{url_for('delete_' + type)}}" method="post">
                         <input type="hidden" name="location" value="view_all"/>
                         <input type="hidden" name="id" value="{{ datapoint["id"] }}"/>
-                        {% for i in range(variables) %}
+                        {% for i in range(data.variables) %}
                             <input type="hidden" name="variable_{{ i }}" value="{{ datapoint[i] }}"/>
                         {% endfor %}
                         <button 
@@ -45,7 +45,7 @@
                     </form>
                 </td>
                 <td class="border">{{ datapoint['id'] }}
-                {% for i in range(variables) %}
+                {% for i in range(data.variables) %}
                     <td class="border">{{ datapoint[i] }}</td>
                 {% endfor %}
                 </td>

@@ -5,7 +5,18 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Results</h1>
+    <div class='flex space-x-4 pb-2'>
+        <strong>Results</strong>
+        <!-- CALCULATE distances -->
+        <form action="{{ url_for('calculate_distances') }}" method="post">
+        <input type="hidden" name="location" value="view_all"/>
+        <div class="flex justify-center items-center">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline min-h-7 min-w-7 px-2" onclick="checkResultsValidation()" type="submit">
+            Calculate
+            </button>
+        </div>
+        </form>
+    </div>
     {% if not data.results or not data.candidates or not data.voters or not data.voters[0]['distances'] %}
         <p>No results generated yet</p>
     {% else %}
@@ -36,5 +47,14 @@
         </tbody>
         </table>
     {% endif %}
+
+<script>
+    function checkResultsValidation() {
+        if ({{ data.voters | length }} < 1 || {{ data.candidates | length }} < 2) {
+        alert('Need at least 1 voter and 2 candidates to calculate results');
+        return false;
+        }
+    }
+</script>
 
 {% endblock %}

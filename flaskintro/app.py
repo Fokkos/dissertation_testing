@@ -24,7 +24,7 @@ def index():
     global data
     # push any errors through to a flash message
     error = None
-    return render_template('index.html', error=error, data=data)
+    return render_template('index.html', error=error, data=data, type='home')
     
 
 # routes to add candidates and voters
@@ -88,8 +88,12 @@ def set_distance_measure():
 # route to calculate the distances between voters and candidates
 @app.post('/calculate_distances')
 def calculate_distances():
+    form = request.form
     data.update_results()
-    return redirect(url_for('index'))
+    if form['location'] == 'index':
+        return redirect(url_for('index'))
+    if form['location'] == 'view_all':
+        return redirect(url_for('results'))
 
 # route to process a csv file and store the contents in the candidates object
 @app.post('/csv')
@@ -107,7 +111,7 @@ def voters():
         voters = [voter for voter in data.voters if query in voter['id']]
     else:
         voters = data.voters
-    return render_template('viewall.html', variables=data.variables, dataset=voters, data=data, type='voter')
+    return render_template('viewall.html', dataset=voters, data=data, type='voter')
 
 @app.get('/candidates')
 def candidates():
@@ -117,14 +121,19 @@ def candidates():
         candidates = [candidate for candidate in data.candidates if query in candidate['id']]
     else:
         candidates = data.candidates
-    return render_template('viewall.html', variables=data.variables, dataset=candidates, data=data, type='candidate')
+    return render_template('viewall.html', dataset=candidates, data=data, type='candidate')
 
 # Results page
 @app.get('/results')
 def results():
     global data
-    return render_template('results.html', data=data)
+    return render_template('results.html', data=data, type='results')
 
+# visualisations page
+@app.get('/visualisations')
+def visualisations():
+    global data
+    return render_template('visualisations.html', data=data, type='visualisations')
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -223,7 +223,15 @@
                 {% set id = loop.index %} 
 
                 let new_candidate{{ id }} = {}; // Create a new object for each iteration
+
+                // for radar charts, names > 12 characters get cut off
                 new_candidate{{ id }}.label = "{{ candidate['id'] }}";
+                {% if candidate['id']|length > 12 %}
+                    if (form.elements['graph_type'].value == 'radar') {
+                        new_candidate{{ id }}.label = "{{ candidate['id'][:12] }}...";
+                    }
+                {% endif %}
+
                 new_candidate{{ id }}.fill = false; // removes bg from radar chart
                 new_candidate{{ id }}.data = [];
                 new_candidate{{ id }}.borderWidth = 1;
@@ -244,7 +252,15 @@
                 {% set id = loop.index %} 
 
                 let new_voter{{ id }} = {}; // Create a new object for each iteration
+
+                // for radar charts, names > 12 characters get cut off
                 new_voter{{ id }}.label = "{{ voter['id'] }}";
+                {% if voter['id']|length > 12 %}
+                    if (form.elements['graph_type'].value == 'radar') {
+                        new_voter{{ id }}.label = "{{ voter['id'][:12] }}...";
+                    }
+                {% endif %}
+
                 new_voter{{ id }}.fill = false; // removes bg from radar chart
                 new_voter{{ id }}.data = [];
                 new_voter{{ id }}.borderWidth = 1;
@@ -263,7 +279,7 @@
 
     function getAverageVoter(selectedVariables) {
         let average_voter = {};
-        average_voter.label = "Average voter";
+        average_voter.label = "Average Voter";
         average_voter.fill = false; // removes bg from radar chart
         average_voter.data = [];
         average_voter.borderWidth = 1;

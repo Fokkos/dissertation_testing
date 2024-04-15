@@ -25,11 +25,12 @@
       {% include 'partials/view_data.html' %}
     {% endwith %}
   </div>
-  <div class="px-2 py-2 overflow-x-scroll">
+  <div class="px-2 py-2">
     <div class='flex space-x-4 pb-2'>
       <strong>Results</strong>
       <!-- CALCULATE distances -->
         <form action="{{ url_for('calculate_distances') }}" method="post">
+          <input type="hidden" name="location" value="index"/>
           <div class="flex justify-center items-center">
             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline min-h-7 min-w-7 px-2" onclick="checkResultsValidation()" type="submit">
               Calculate
@@ -66,16 +67,6 @@
       </tbody>
     </table>
     {% endif %}
-  </div>
-</div>
-
-<!-- row3 visualisations -->
-<div class=''>
-  <div class="w-full flex justify-center">
-    <h1>visualisations</h1>
-  </div>
-  <div class="w-full flex justify-center">
-    {% include 'partials/chartjs.html' %}
   </div>
 </div>
 
