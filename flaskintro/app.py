@@ -45,13 +45,19 @@ def add_voter():
 def delete_candidate():
     form = request.form
     data.delete_data_point('candidate', form)
-    return redirect(url_for('index'))
+    if form['location'] == 'index':
+        return redirect(url_for('index'))
+    if form['location'] == 'view_all':
+        return redirect(url_for('candidates'))
 
 @app.post('/delete_voter')
 def delete_voter():
     form = request.form
     data.delete_data_point('voter', form)
-    return redirect(url_for('index'))
+    if form['location'] == 'index':
+        return redirect(url_for('index'))
+    if form['location'] == 'view_all':
+        return redirect(url_for('voters'))
 
 # route to set the variable count and assign default variable names
 @app.post('/set_variables')
@@ -95,11 +101,20 @@ def csv():
 # routes to view all candidates and voters
 @app.get('/voters')
 def voters():
-    return render_template('viewall.html', variables=data.variables, dataset=data.voters, type='voter')
+    global data
+    return render_template('viewall.html', variables=data.variables, dataset=data.voters, data=data, type='voter')
 
 @app.get('/candidates')
 def candidates():
-    return render_template('viewall.html', variables=data.variables, dataset=data.candidates, type='candidate')
+    global data
+    return render_template('viewall.html', variables=data.variables, dataset=data.candidates, data=data, type='candidate')
+
+# Results page
+@app.get('/results')
+def results():
+    global data
+    return render_template('results.html', data=data)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

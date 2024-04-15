@@ -9,13 +9,20 @@
     <h1>All {{ type }}s <strong>insert search bar here</strong></h1>
     {% if not dataset %}
         <p>{{'No ' + type + 's'}}</p>
-    {% endif %}
+    {% else %}
     <tbody>
+        <th class="border"></th>
+        <th class="border">Name</th>
+        {% for variable_name in data.variable_names %}
+            <th class="border px-1">{{ variable_name }}</th>
+        {% endfor %}
+        
         {% for datapoint in dataset %}
             <tr id="row_{{ datapoint["id"] }}">
-                <td>
-                    <form action="{{ url_for('index') }}" method="POST">
-                        <input type="hidden" name="form_type" value="{{'delete_' + type}}"/>
+            
+                <td class="border">
+                    <form action="{{url_for('delete_' + type)}}" method="post">
+                        <input type="hidden" name="location" value="view_all"/>
                         <input type="hidden" name="id" value="{{ datapoint["id"] }}"/>
                         {% for i in range(variables) %}
                             <input type="hidden" name="variable_{{ i }}" value="{{ datapoint[i] }}"/>
@@ -28,13 +35,14 @@
                         </button>
                     </form>
                 </td>
-                <td>{{ datapoint['id'] }}: (
+                <td class="border">{{ datapoint['id'] }}
                 {% for i in range(variables) %}
-                    {{ datapoint[i] }}{% if not loop.last %}, {% endif %}
-                {% endfor %})
+                    <td class="border">{{ datapoint[i] }}</td>
+                {% endfor %}
                 </td>
             </tr>
         {% endfor %}
     </tbody>
+    {% endif %}
 </table>
 {% endblock %}

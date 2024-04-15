@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>All Results</title>
+{% endblock %}
+
+{% block body %}
+    <h1>Results</h1>
+    {% if not data.results or not data.candidates or not data.voters or not data.voters[0]['distances'] %}
+        <p>No results generated yet</p>
+    {% else %}
+        {% if data.candidates | length > 10 %}
+            <p>Since there are more than 10 candidates, only the top 10 winners are displayed for each voter.
+                Click on a voter's name in order to see their full results.</p>
+        {% endif %}
+        <table class="table-auto">
+        <tbody>
+            <th class="border">voter</th>
+            <th class="border">winner</th>
+            <th class="border">full results</th>
+            <!-- show average voter -->
+            <tr>
+            <td class="border">Average voter</td>
+            {% for distance in data.average_voter['distances'][:10] %}
+                <td class="border">{{ distance[0][:20] }}: {{ distance[1]|round(4) }} </td>
+            {% endfor %}
+            </tr>
+            {% for voter in data.voters %}
+            <tr>
+            <td class="border">{{ voter['id'] }}</td>
+            {% for distance in voter['distances'][:10] %}
+                <td class="border">{{ distance[0][:20] }}: {{ distance[1]|round(4) }} </td>
+            {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    {% endif %}
+
+{% endblock %}

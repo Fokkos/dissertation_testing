@@ -1,23 +1,33 @@
-<div class="px-2 w-1/2 max-h-1/3 overflow-y-scroll">
+<div class="px-2 pt-2 w-1/2 max-h-1/3 overflow-y-scroll">
     <table class="table-auto">
         <div class="flex space-x-4">
             <h1>{{type.title() + 's'}}</h1>
-            {% if dataset |length > 10 %}
-                <p>Too many {{type}}s to display. <a href="{{ type }}s">View all</a></p>
-            {% endif %}
             <!-- INPUT data -->
             {% with type = type %}
                 {% include 'partials/add_data.html' %}
             {% endwith %}
+            {% if dataset |length > 10 %}
+                <p>Too many {{type}}s to display. 
+                    <a href="{{ type }}s">
+                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline min-h-7 min-w-7 px-2" >
+                            View All
+                        </button>
+                    </a>
+                </p>
+            {% endif %}
+            
         </div>
         {% if not dataset %}
             <p>{{'No ' + type + 's'}}</p>
         {% endif %}
         <tbody>
-        {% for datapoint in dataset[:10] %}
+        <!-- reverse dataset so you see most recent additions first -->
+        {% set dataset = dataset|reverse|list %}
+        {% for datapoint in  dataset[:10]%}
         <tr id="row_{{ datapoint["id"] }}">
             <td>
                 <form action="{{url_for('delete_' + type)}}" method="post">
+                    <input type="hidden" name="location" value="index"/>
                     <input type="hidden" name="id" value="{{ datapoint["id"] }}"/>
                     {% for i in range(data.variables) %}
                     <input type="hidden" name="variable_{{ i }}" value="{{ datapoint[i] }}"/>
@@ -30,11 +40,7 @@
                     </button>
                 </form>
             </td>
-            <td>{{ datapoint['id'] }}: (
-            {% for i in range(data.variables) %}
-                {{ datapoint[i] }}{% if not loop.last %}, {% endif %}
-            {% endfor %})
-            </td>
+            <td class='px-1'>{{ datapoint['id'] }}</td>
         </tr>
         {% endfor %}
         </tbody>
