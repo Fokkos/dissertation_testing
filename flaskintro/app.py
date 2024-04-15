@@ -32,12 +32,14 @@ def index():
 def add_candidate():
     form = request.form
     data.add_data_point('candidate', form)
+    data.update_results()
     return redirect(url_for('index'))
     
 @app.post('/add_voter')
 def add_voter():
     form = request.form
     data.add_data_point('voter', form)
+    data.update_results()
     return redirect(url_for('index'))
 
 # routes to delete candidates and voters
@@ -45,6 +47,7 @@ def add_voter():
 def delete_candidate():
     form = request.form
     data.delete_data_point('candidate', form)
+    data.update_results()
     if form['location'] == 'index':
         return redirect(url_for('index'))
     if form['location'] == 'view_all':
@@ -54,6 +57,7 @@ def delete_candidate():
 def delete_voter():
     form = request.form
     data.delete_data_point('voter', form)
+    data.update_results()
     if form['location'] == 'index':
         return redirect(url_for('index'))
     if form['location'] == 'view_all':

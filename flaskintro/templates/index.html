@@ -25,50 +25,46 @@
       {% include 'partials/view_data.html' %}
     {% endwith %}
   </div>
-  <div class="px-2 py-2">
-    <div class='flex space-x-4 pb-2'>
-      <strong>Results</strong>
-      <!-- CALCULATE distances -->
-        <form action="{{ url_for('calculate_distances') }}" method="post">
-          <input type="hidden" name="location" value="index"/>
-          <div class="flex justify-center items-center">
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline min-h-7 min-w-7 px-2" onclick="checkResultsValidation()" type="submit">
-              Calculate
-            </button>
-          </div>
-        </form>
+  <div id='election-settings' class='flex justify-center'>
+    <div>
+      <div class='font-bold text-2xl'>
+        <h1>Election Settings</h1>
+      </div>
+      <p class="text-center"> Candidates: {{ data.candidates | length }} <br>
+        Voters: {{ data.voters | length }} <br>
+        Distance Measure: {{ data.distance_measure }} <br>
+        Election Type: {{ data.election_type }} <br>
+        Voting Style: {{ data.voting_style }} <br>
+      </p>
     </div>
-    {% if not data.results or not data.candidates or not data.voters or not data.voters[0]['distances'] %}
-      <p>No results</p>
-    {% else %}
-    {% if data.voters[0]['distances'] |length > 10 %}
-        <p>Too many alternatives to display. Click on a voters name to see full results</p>
-    {% endif %}
-    <table class="table-auto">
-      <tbody>
-        <th class="border">voter</th>
-        <th class="border">winner</th>
-        <th class="border">full results</th>
-        <!-- show average voter -->
-        <tr>
-          <td class="border">Average voter</td>
-          {% for distance in data.average_voter['distances'][:10] %}
-            <td class="border">{{ distance[0][:20] }}: {{ distance[1]|round(4) }} </td>
-          {% endfor %}
-        </tr>
-        {% for voter in data.voters %}
-        <tr>
-          <td class="border">{{ voter['id'] }}</td>
-          {% for distance in voter['distances'][:10] %}
-            <td class="border">{{ distance[0][:20] }}: {{ distance[1]|round(4) }} </td>
-          {% endfor %}
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% endif %}
+  </div>
+    
+  <div class='flex justify-center py-2'>
+    <button 
+        id="findWinnerButton" 
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline"
+        onclick="findWinner()">
+        Find winner(s)
+    </button>
   </div>
 </div>
+
+  <!-- Winner Dialog -->
+  <div id="winnerDialog" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div class="bg-gray-500 bg-opacity-50 fixed inset-0 transition-opacity"></div> <!-- Background overlay -->
+    <div class="bg-white rounded-lg border-2 px-8 py-4 max-w-m relative"> <!-- Relative positioning for overlay -->
+      <div class='text-3xl flex justify-center'>
+        <h2><strong>Winner:</strong></h2>
+      </div>
+      <div class='text-5xl flex justify-center py-5 px-10'>
+        <h2 id='winner-text'><strong>null</strong></h2>
+      </div>
+      <div class='flex justify-center'>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" onclick="closeWinnerDialog()">Close</button>
+      </div>
+      
+    </div>
+  </div>
 
 <script>
   function checkResultsValidation() {
@@ -76,6 +72,36 @@
       alert('Need at least 1 voter and 2 candidates to calculate results');
       return false;
     }
+    return true;
+  }
+
+  function findWinner() {
+    if (checkResultsValidation()) {
+      // remove hidden from winnerDialog
+      var dialog = document.getElementById('winnerDialog');
+      dialog.classList.remove('hidden');
+      
+      // Add event listener to the background overlay
+      var overlay = document.querySelector('#winnerDialog .bg-opacity-50');
+      overlay.addEventListener('click', closeWinnerDialog);
+      document.getElementById('winner-text').innerText = '{{ data.average_voter['distances'][0][0] }}';
+
+      // confetti
+      confetti({
+        particleCount: 500,
+        spread: 100
+      });
+    }
+  }
+
+  // Function to close winner dialog
+  function closeWinnerDialog() {
+    var dialog = document.getElementById('winnerDialog');
+    dialog.classList.add('hidden');
+    
+    // Remove event listener from the background overlay
+    var overlay = document.querySelector('#winnerDialog .bg-opacity-50');
+    overlay.removeEventListener('click', closeWinnerDialog);
   }
 </script>
 

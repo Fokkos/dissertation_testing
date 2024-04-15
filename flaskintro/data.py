@@ -77,6 +77,7 @@ class Data:
         voter['id'] = 'average voter'
         for i in range(self.variables):
             voter[i] = format(float(0), ".2f")
+        voter['distances'] = [[None], [None]]
         return voter
 
     def update_average_voter(self):
