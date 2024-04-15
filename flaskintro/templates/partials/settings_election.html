@@ -1,0 +1,28 @@
+<div class='bg-white border-2 px-3 py-2'>
+    <div class='flex justify-center'>
+        <h2>Election Settings</h2>
+    </div>
+    <div class='flex'>
+        <div class="mb-1 w-1/2">
+            <form action="{{ url_for('set_distance_measure') }}" class='flex space-x-2' method="POST">
+                <label class="block text-gray-700 mb-2" for="distance_measure">Distance Measure:</label>
+                <select class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="distance_measure" name="distance_measure" onchange="this.form.submit()">
+                    <option value="euclidean" {% if data.distance_measure == 'euclidean' %} selected {% endif %}>Euclidean</option>
+                    <option value="manhattan" {% if data.distance_measure == 'manhattan' %} selected {% endif %}>Manhattan</option>
+                    <option value="chebyshev" {% if data.distance_measure == 'chebyshev' %} selected {% endif %}>Chebyshev</option>
+                </select>
+            </form>
+        </div>
+
+        <div class="mb-1 w-1/2">
+            <form action="#" class='flex space-x-2' method="POST">
+                <label class="block text-gray-700 mb-2" for="election_type">Election:</label>
+                <select class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="election_type" name="election_type" onchange="this.form.submit()">
+                    <option value="Single-Winner" {% if data.distance_measure == 'euclidean' %} selected {% endif %}>Single-Winner</option>
+                    <option value="Multi-Winner" {% if data.distance_measure == 'manhattan' %} selected {% endif %}>Multi-Winner</option>
+                    <option value="Participatory Budgeting" {% if data.distance_measure == 'chebyshev' %} selected {% endif %}>Participatory Budget</option>
+                </select>
+            </form>
+        </div>
+    </div>
+</div>
