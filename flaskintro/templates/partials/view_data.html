@@ -17,8 +17,7 @@
         {% for datapoint in dataset[:10] %}
         <tr id="row_{{ datapoint["id"] }}">
             <td>
-                <form action="{{ url_for('index') }}" method="POST">
-                    <input type="hidden" name="form_type" value="{{'delete_' + type}}"/>
+                <form action="{{url_for('delete_' + type)}}" method="post">
                     <input type="hidden" name="id" value="{{ datapoint["id"] }}"/>
                     {% for i in range(data.variables) %}
                     <input type="hidden" name="variable_{{ i }}" value="{{ datapoint[i] }}"/>

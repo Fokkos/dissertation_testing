@@ -11,6 +11,7 @@ class Data:
         self.min = 0
         self.max = 10
         self.default_min = True
+        self.average_voter = self.create_average_voter()
 
     def assign_default_variable_names(self):
         self.delete_data()
@@ -21,6 +22,7 @@ class Data:
     def update_results(self):
         if self.candidates:
             global results
+            choose_candidate(self, self.average_voter)
             for voter in self.voters:
                 choose_candidate(self, voter)
             self.results = True
@@ -36,6 +38,7 @@ class Data:
             self.candidates.append(point)
         elif type == 'voter':
             self.voters.append(point)
+            self.average_voter = self.update_average_voter()
         self.results = False
     
     def delete_data_point(self, type: str, form):
@@ -45,10 +48,10 @@ class Data:
         elif type == 'voter':
             # if there are results, remove them so that the voter can be found for deletion
             for voter in self.voters:
-                if 'winner' in voter:
-                    del voter['winner']
+                if 'distances' in voter:
                     del voter['distances']
             self.voters.remove(point)
+            self.average_voter = self.update_average_voter()
         self.results = False
     
     def extract_point(self, form):
@@ -65,5 +68,26 @@ class Data:
         self.results = False
         self.max = 10
         self.min = 0
+        self.average_voter = self.create_average_voter()
+
+    def create_average_voter(self):
+        voter = {}
+        voter['id'] = 'average voter'
+        for i in range(self.variables):
+            voter[i] = format(float(0), ".2f")
+        return voter
+
+    def update_average_voter(self):
+        average_voter = self.create_average_voter()
+        if len(self.voters) == 0:
+            return average_voter
+        else:
+            for i in range(self.variables):
+                total = 0
+                for voter in self.voters:
+                    total += float(voter[i])
+                average_voter[i] = format(total / len(self.voters), ".2f")
+            return average_voter
+
 
     

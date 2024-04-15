@@ -78,6 +78,16 @@
                             <label for="select_all_voter">Select all</label>
                         </div>
                         <div class="max-h-52 overflow-y-scroll">
+                            <div class="flex justify-items-start border-b-2" id='average_voter_chartks_modal'>
+                                <input 
+                                    class="m-2" 
+                                    type="checkbox" 
+                                    id="average_voter" 
+                                    name="average_voter"
+                                    value="average_voter"
+                                    onclick="updateDataCounter('average_voter')">
+                                <label for="average_voter" >Average voter</label>
+                            </div>
                             {% for voter in data.voters %}
                                 <div class="flex justify-items-start">
                                     <input 
@@ -198,6 +208,12 @@
 
     function getData(form, selectedVariables) {
         selectedData = [];
+
+        // check if average voter is selected. if so, add to dataset
+        if (form.elements['average_voter'].checked) {
+            selectedData.push(getAverageVoter(selectedVariables));
+        } 
+
         // loop through all the checkboxes and process each candidate and voter selected
         {% for candidate in data.candidates %}
             if (form.elements['candidate_{{ candidate["id"] }}'].checked) {
@@ -243,6 +259,22 @@
             }
         {% endfor %}
         return selectedData;
+    }
+
+    function getAverageVoter(selectedVariables) {
+        let average_voter = {};
+        average_voter.label = "Average voter";
+        average_voter.fill = false; // removes bg from radar chart
+        average_voter.data = [];
+        average_voter.borderWidth = 1;
+
+        {% for var in range(data.variables) %}
+            if (selectedVariables.includes({{ var }})) {
+                average_voter.data.push(parseFloat('{{ data.average_voter[var] }}'));
+            }
+        {% endfor %}
+
+        return average_voter;
     }
 
     // gets the selected variables from the modal and returns an array of ids

@@ -8,6 +8,7 @@ def choose_candidate(data, voter):
             distances.append((candidate['id'], manhattan_distance(voter, candidate, data.variables)))
         # TODO: minkowski, discrete and hamming
         # research mahalanobis, cosine, jaccard, pearson, spearman, kendall
+    # sort the distances by shortest to longest
     voter['distances'] = sorted(distances, key=lambda x: x[1])
 
 def euclidean_distance(voter, candidate, variables):

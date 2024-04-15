@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, redirect
 from csv_handler import process_csv
 from data import Data
 
@@ -19,43 +19,80 @@ data = Data()
 # TODO - let user decide which 3 properties to use as axes in a 3d space
 # https://threejs.org/docs/index.html#manual/en/introduction/Drawing-lines
 
-@app.route('/', methods=['GET', 'POST'])
+@app.get('/')
 def index():
     global data
+    # push any errors through to a flash message
     error = None
-    refresh = True
-    if request.method == 'POST':
-        form = request.form
-        action = form['form_type']
-        
-        if action == 'add_candidate':
-            data.add_data_point('candidate', form)
-        elif action == 'delete_candidate':
-            data.delete_data_point('candidate', form)
-        if action == 'add_voter':
-            data.add_data_point('voter', form)
-        elif action == 'delete_voter':
-            data.delete_data_point('voter', form)
-        elif action == 'set_variables':
-            data.variables = int(form['variables'])
-            data.assign_default_variable_names()
-        elif action == 'set_distance_measure':
-            print("setting distance measure")
-            data.distance_measure = form['distance_measure']
-            if data.results:
-                print("updating results")
-                data.update_results()
-        elif action == 'calculate_distances':
-            data.update_results()
-            print(data.results)
-        elif action == 'set_variable_names':
-            data.update_variable_names(form)
-        elif action == 'csv':
-            file = request.files.get('file')
-            process_csv(file, data)
-    if refresh:
-        return render_template('index.html', error=error, data=data)
+    return render_template('index.html', error=error, data=data)
     
+
+# routes to add candidates and voters
+@app.post('/add_candidate')
+def add_candidate():
+    form = request.form
+    data.add_data_point('candidate', form)
+    return redirect(url_for('index'))
+    
+@app.post('/add_voter')
+def add_voter():
+    form = request.form
+    data.add_data_point('voter', form)
+    return redirect(url_for('index'))
+
+# routes to delete candidates and voters
+@app.post('/delete_candidate')
+def delete_candidate():
+    form = request.form
+    data.delete_data_point('candidate', form)
+    return redirect(url_for('index'))
+
+@app.post('/delete_voter')
+def delete_voter():
+    form = request.form
+    data.delete_data_point('voter', form)
+    return redirect(url_for('index'))
+
+# route to set the variable count and assign default variable names
+@app.post('/set_variables')
+def set_variables():
+    form = request.form
+    data.variables = int(form['variables'])
+    data.assign_default_variable_names()
+    data.average_voter = data.create_average_voter()
+    return redirect(url_for('index'))
+
+# route to set variable names
+@app.post('/set_variable_names')
+def set_variable_names():
+    form = request.form
+    data.update_variable_names(form)
+    return redirect(url_for('index'))
+
+# route to set the distance measure used for calculations
+@app.post('/set_distance_measure')
+def set_distance_measure():
+    form = request.form
+    data.distance_measure = form['distance_measure']
+    # if results already exist, update them with the new measure
+    if data.results:
+        data.update_results()
+    return redirect(url_for('index'))
+
+# route to calculate the distances between voters and candidates
+@app.post('/calculate_distances')
+def calculate_distances():
+    data.update_results()
+    return redirect(url_for('index'))
+
+# route to process a csv file and store the contents in the candidates object
+@app.post('/csv')
+def csv():
+    file = request.files.get('file')
+    process_csv(file, data)
+    return redirect(url_for('index'))
+
+# routes to view all candidates and voters
 @app.get('/voters')
 def voters():
     return render_template('viewall.html', variables=data.variables, dataset=data.voters, type='voter')
