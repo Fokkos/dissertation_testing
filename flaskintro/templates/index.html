@@ -50,8 +50,8 @@
 </div>
 
   <!-- Winner Dialog -->
-  <div id="winnerDialog" class="fixed inset-0 z-50 flex items-center justify-center hidden">
-    <div class="bg-gray-500 bg-opacity-50 fixed inset-0 transition-opacity"></div> <!-- Background overlay -->
+  <div id="winnerModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div id='winnerModalOverlay' class="bg-gray-500 bg-opacity-50 fixed inset-0 transition-opacity"></div> <!-- Background overlay -->
     <div class="bg-white rounded-lg border-2 px-8 py-4 max-w-m relative"> <!-- Relative positioning for overlay -->
       <div class='text-3xl flex justify-center'>
         <h2><strong>Winner:</strong></h2>
@@ -60,7 +60,7 @@
         <h2 id='winner-text'><strong>null</strong></h2>
       </div>
       <div class='flex justify-center'>
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" onclick="closeWinnerDialog()">Close</button>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" onclick="closeModal('winnerModal')">Close</button>
       </div>
       
     </div>
@@ -77,13 +77,9 @@
 
   function findWinner() {
     if (checkResultsValidation()) {
-      // remove hidden from winnerDialog
-      var dialog = document.getElementById('winnerDialog');
-      dialog.classList.remove('hidden');
-      
-      // Add event listener to the background overlay
-      var overlay = document.querySelector('#winnerDialog .bg-opacity-50');
-      overlay.addEventListener('click', closeWinnerDialog);
+      // open the modal
+      openModal('winnerModal');
+
       document.getElementById('winner-text').innerText = '{{ data.average_voter['distances'][0][0] }}';
 
       // confetti
@@ -92,16 +88,6 @@
         spread: 100
       });
     }
-  }
-
-  // Function to close winner dialog
-  function closeWinnerDialog() {
-    var dialog = document.getElementById('winnerDialog');
-    dialog.classList.add('hidden');
-    
-    // Remove event listener from the background overlay
-    var overlay = document.querySelector('#winnerDialog .bg-opacity-50');
-    overlay.removeEventListener('click', closeWinnerDialog);
   }
 </script>
 

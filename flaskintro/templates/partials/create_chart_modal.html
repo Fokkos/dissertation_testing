@@ -1,6 +1,7 @@
 <!-- Modal -->
-<div id="graphModal" class="modal hidden fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center w-screen">
-    <div class="modal-content bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+<div id="graphModal" class="modal hidden fixed inset-0 bg-transparent flex justify-center items-center w-screen">
+    <div id="graphModalOverlay" class="modal-overlay bg-gray-500 bg-opacity-75 fixed inset-0 z-40"></div>
+    <div class="modal-content bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 z-50">
         <!-- Form -->
         <div class="mb-4 flex items-center justify-between">
             <h5 class="modal-title text-xl font-semibold">Create a graph</h5>
@@ -9,7 +10,7 @@
                 id="graphModalCloseBtn"
                 aria-label="Close modal"
                 title="Close modal"
-                onclick(graphModal.classList.add("hidden");)
+                onclick="closeModal('graphModal')"
                 ><span class="material-icons">close</span>
             </button>
         </div>
@@ -152,26 +153,6 @@
 </div>
 
 <script>
-    // Get the modal
-    var graphModal = document.getElementById("graphModal");
-
-    // Get the button that opens the modal
-    var graphModalBtn = document.getElementById("graphModalTrigger");
-
-    // When the user clicks the button, open the modal 
-    graphModalBtn.onclick = function() {
-    graphModal.classList.remove("hidden");
-    }
-
-    // Add click event listener to the close button
-    graphModalCloseBtn.addEventListener('click', function(event) {
-        // Prevent default form submission behavior
-        event.preventDefault();
-        
-        // Close the modal
-        graphModal.classList.add('hidden');
-    });
-
     // process the data of the modal and prepare it for chart creation
     function processData(form) {
         // prevents the default GET request
