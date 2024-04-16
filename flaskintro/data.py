@@ -7,7 +7,7 @@ class Data:
         self.variables = 2
         self.distance_measure = 'euclidean'
         self.election_type = 'single-winner'
-        self.voting_style = 'plurality'
+        self.voting_style = 'average-voter'
         self.results = False
         self.variable_names = ['x', 'y']
         self.min = 0
