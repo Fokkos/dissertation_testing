@@ -19,13 +19,6 @@
                 <div class="flex justify-center">
                     <p><strong>Choose type of graph</strong></p>
                 </div>
-                <!-- radio for pcp or radar -->
-                <div class="flex justify-center space-x-4 p-y-1">
-                    <input type="radio" id="pcp" name="graph_type" value="line" checked>
-                    <label for="pcp">Parallel Coordinate Plot</label>
-                    <input type="radio" id="radar" name="graph_type" value="radar">
-                    <label for="radar">Radar Chart</label>
-                </div>
                 <div class='w-[60rem] flex justify-center'>
                     <p><strong>Choose up to 25 voters and/or candidates to compare</strong></p>
                     <p id="data_counter" class="ml-2">0/25</p>
@@ -180,11 +173,8 @@
         // close the modal
         graphModal.classList.add('hidden');
 
-        // get type of graph to generate
-        var graph_type = form.elements['graph_type'].value;
-
         // create the chart
-        createChart(graph_type, selectedData, selectedVariables);
+        createCharts(selectedData, selectedVariables);
     }
 
     function getData(form, selectedVariables) {
@@ -205,14 +195,7 @@
 
                 let new_candidate{{ id }} = {}; // Create a new object for each iteration
 
-                // for radar charts, names > 12 characters get cut off
                 new_candidate{{ id }}.label = "{{ candidate['id'] }}";
-                {% if candidate['id']|length > 12 %}
-                    if (form.elements['graph_type'].value == 'radar') {
-                        new_candidate{{ id }}.label = "{{ candidate['id'][:12] }}...";
-                    }
-                {% endif %}
-
                 new_candidate{{ id }}.fill = false; // removes bg from radar chart
                 new_candidate{{ id }}.data = [];
                 new_candidate{{ id }}.borderWidth = 1;
@@ -234,14 +217,7 @@
 
                 let new_voter{{ id }} = {}; // Create a new object for each iteration
 
-                // for radar charts, names > 12 characters get cut off
                 new_voter{{ id }}.label = "{{ voter['id'] }}";
-                {% if voter['id']|length > 12 %}
-                    if (form.elements['graph_type'].value == 'radar') {
-                        new_voter{{ id }}.label = "{{ voter['id'][:12] }}...";
-                    }
-                {% endif %}
-
                 new_voter{{ id }}.fill = false; // removes bg from radar chart
                 new_voter{{ id }}.data = [];
                 new_voter{{ id }}.borderWidth = 1;
