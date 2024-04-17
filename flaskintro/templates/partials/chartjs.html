@@ -11,28 +11,54 @@
   </div>
 
   <!-- Canvas to display the chart.js visualisation -->
-  <div id='showCanvas' class='hidden'>
-    <div class="chart-container flex justify-center" style="position: relative; height:40vh; width:80vw">
-      <canvas id="myChart"></canvas>
-    </div>
-
-    <!-- Save image as png -->
-    <div class='flex justify-center'>
-      <button 
-        id="saveAsPng" 
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        onclick="saveImage()">
-        Save as PNG
-      </button> 
+  <div id='showCanvas' class='hidden flex justify-center w-[100%]'>
+    <div class='w-1/2'>
+      <div class='flex justify-center my-2'>
+        <h1 class='text-center text-2xl font-bold'>Parallel Coordinate Plot</h1>
+        <button 
+          id="saveAsPng" 
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mx-4 rounded focus:outline-none focus:shadow-outline"
+          onclick="saveImage('pcpChart')">
+          Save as PNG
+        </button>
+      </div>
+      <div class='border-x-2 border-t-2'>
+        <canvas id="pcpChart"></canvas>
+      </div>
+      <div class='flex justify-center my-2'>
+        <h1 class='text-center text-2xl font-bold'>Radar Chart</h1>
+        <button 
+          id="saveAsPng" 
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mx-4 rounded focus:outline-none focus:shadow-outline"
+          onclick="saveImage('radarChart')">
+          Save as PNG
+        </button>
+      </div>
+      <div class='border-2'>
+        <canvas id="radarChart"></canvas>
+      </div>
+      <!-- Save image as png -->
     </div>
   </div>
+
+  <!--
+      <div class='flex justify-center'>
+        <button 
+          id="saveAsPng" 
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          onclick="saveImage()">
+          Save as PNG
+        </button> 
+      </div>
+  -->
 
 <!-- The 'create chart' modal to be rendered after the canvas -->
 {% include 'partials/create_chart_modal.html' %}
 
 <script>
-  // initially there is no chart instance
-  let chartInstance = null;
+  // initially there are no chart instances
+  let radarChartInstance = null;
+  let pcpChartInstance = null;
   
   // Updates the canvas with the selected data and variables and creates a radar or pcp chart using Chart.JS
   function createChart(type, selectedData, selectedVariables) {
@@ -45,12 +71,24 @@
       }
     {% endfor %}
 
-    const ctx = document.getElementById('myChart');
+    const radarCtx = document.getElementById('radarChart');
+    const pcpCtx = document.getElementById('pcpChart');
     
-    if (chartInstance) {
-      chartInstance.destroy();
+    if (radarChartInstance) {
+      radarChartInstance.destroy();
     }
 
+    if (pcpChartInstance) {
+      pcpChartInstance.destroy();
+    }
+
+    radarChartInstance = makeChart(radarCtx, 'radar', variable_names, selectedData);
+    pcpChartInstance = makeChart(pcpCtx, 'line', variable_names, selectedData);
+
+    document.getElementById('showCanvas').classList.remove('hidden');
+  }
+
+  function makeChart(ctx, type, variable_names, selectedData) {
     chartInstance = new Chart(ctx, {
       type: type,
       data: {
@@ -122,20 +160,12 @@
     // If type is "radar", position the legend on the left
     if (type === "radar") {
       chartInstance.options.plugins.legend.position = 'left';
-      chartInstance.canvas.parentNode.style.height = '600px';
-      chartInstance.canvas.parentNode.style.width = '600px';
     }
-    else
-    {
-      chartInstance.canvas.parentNode.style.height = '40vh';
-      chartInstance.canvas.parentNode.style.width = '80vw';
-    }
-
-    
 
     // Finally, update the chart instance
     chartInstance.update();
-    document.getElementById('showCanvas').classList.remove('hidden');
+
+    return chartInstance;
   }
 
   // chart.js plugins
@@ -166,8 +196,8 @@
     chartInstance.update();
   }
 
-  function saveImage() {
-    const canvas = document.getElementById('myChart');
+  function saveImage(chartId) {
+    const canvas = document.getElementById(chartId);
     const image = canvas.toDataURL('image/png', 1.0);
     const link = document.createElement('a');
     link.download = 'chart.png';
