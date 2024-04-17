@@ -137,7 +137,17 @@ def results():
 @app.get('/visualisations')
 def visualisations():
     global data
-    return render_template('visualisations.html', data=data, type='visualisations')
+    # get default candidates (top 10 for average voter)
+    default_candidates = []
+    if len(data.candidates) > 1:
+        for id, score in data.average_voter['distances'][:10]:
+            for candidate in data.candidates:
+                if candidate['id'] == id:
+                    default_candidates.append(candidate)
+                    break
+    print(default_candidates)
+    return render_template('visualisations.html', data=data, 
+        default_candidates=default_candidates, type='visualisations')
 
 if __name__ == "__main__":
     app.run(debug=True)

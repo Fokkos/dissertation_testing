@@ -33,7 +33,7 @@
 <script>
   // initially there is no chart instance
   let chartInstance = null;
-
+  
   // Updates the canvas with the selected data and variables and creates a radar or pcp chart using Chart.JS
   function createChart(type, selectedData, selectedVariables) {
     // get variable names, as CSV imports make this an Index which cannot be read
@@ -173,6 +173,71 @@
     link.download = 'chart.png';
     link.href = image;
     link.click();
+  }
+
+  // js equivalent of python range function made by Taldeck on stackoverflow 
+  // source: https://stackoverflow.com/questions/8273047/javascript-function-similar-to-python-range
+  function range(start, stop, step) {
+    if (typeof stop == 'undefined') {
+        // one param defined
+        stop = start;
+        start = 0;
+    }
+
+    if (typeof step == 'undefined') {
+        step = 1;
+    }
+
+    if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
+        return [];
+    }
+
+    var result = [];
+    for (var i = start; step > 0 ? i < stop : i > stop; i += step) {
+        result.push(i);
+    }
+
+    return result;
+  };
+
+  // function to load the default data into the chart on page load
+  // gets the average voter and the top 10 choices based on that
+  function getDefaultData() {
+    selectedData = [];
+    selectedVariables = range({{data.variables}}).slice(0, 15);
+
+    // get the average voter
+    selectedData.push(getAverageVoter(selectedVariables));
+    
+    {% for candidate in default_candidates %}
+        {% set id = loop.index %} 
+
+        let new_candidate{{ id }} = {}; // Create a new object for each iteration
+
+        // for radar charts, names > 12 characters get cut off
+        new_candidate{{ id }}.label = "{{ candidate['id'] }}";
+
+        new_candidate{{ id }}.fill = false; // removes bg from radar chart
+        new_candidate{{ id }}.data = [];
+        new_candidate{{ id }}.borderWidth = 1;
+
+        {% for var in range(data.variables) %}
+            if (selectedVariables.includes({{ var }})) {
+                new_candidate{{ id }}.data.push(parseFloat('{{ candidate[var] }}'));
+            }
+        {% endfor %}
+    
+        // since candidates and voters are the SAME format, they can just be collected into a single array
+        selectedData.push(new_candidate{{ id }});
+    {% endfor %}
+    console.log('hellooooo')
+    return [selectedData, selectedVariables];
+  }
+
+  //on load, create the default chart
+  window.onload = function() {
+    [selectedData, selectedVariables] = getDefaultData();
+    createChart('radar', selectedData, selectedVariables);
   }
 
 </script>
