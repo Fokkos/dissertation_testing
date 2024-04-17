@@ -29,13 +29,15 @@
         <!-- Modal Trigger Button -->
         <button 
             id="varNameModalTrigger" 
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline">
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline"
+            onclick="openModal('varNameModal')">
             Edit Variable names
         </button>
 
         <!-- Modal -->
-        <div id="varNameModal" class="modal hidden fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center">
-            <div class="modal-content bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div id="varNameModal" class="modal hidden fixed inset-0 flex justify-center items-center">
+            <div id="varNameModalOverlay" class="modal-overlay bg-gray-500 bg-opacity-75 fixed inset-0 z-40"></div>
+            <div class="modal-content bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 z-50">
                 <div class="max-w-xs h-full max-h-80 px-2 overflow-y-scroll">
                     <div class="mb-4 flex items-center justify-between">
                         <h5 class="modal-title text-xl font-semibold">Edit Variable Names</h5>
@@ -44,11 +46,11 @@
                             id="varNameCloseButton"
                             aria-label="Close modal"
                             title="Close modal"
-                            onclick(varNameModal.classList.add("hidden");)
+                            onclick="closeModal('varNameModal')"
                             ><span class="material-icons">close</span>
                         </button>
                     </div>
-                    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" action="{{ url_for('set_variable_names') }}" method="POST">
+                    <form action="{{ url_for('set_variable_names') }}" method="POST">
                         {% for i in range(data.variables) %}
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="x">
@@ -74,25 +76,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    // Get the modal
-    var varNameModal = document.getElementById("varNameModal");
-
-    // Get the button that opens the modal
-    var varNameBtn = document.getElementById("varNameModalTrigger");
-
-    // When the user clicks the button, open the modal 
-    varNameBtn.onclick = function() {
-        varNameModal.classList.remove("hidden");
-    }
-
-    // Add click event listener to the close button
-    varNameCloseButton.addEventListener('click', function(event) {
-        // Prevent default form submission behavior
-        event.preventDefault();
-        
-        // Close the modal
-        varNameModal.classList.add('hidden');
-    });
-</script>
