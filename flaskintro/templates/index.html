@@ -27,7 +27,7 @@
   </div>
   <div id='election-settings' class='flex justify-center'>
     <div>
-      <div class='font-bold text-2xl'>
+      <div class='font-bold text-2xl text-center'>
         <h1>Election Settings</h1>
       </div>
       <p class="text-center" id='showElectionSettings'> Candidates: {{ data.candidates | length }} <br>
@@ -100,12 +100,11 @@
     .then(json => {
       if (json['election_type'] == 'single-winner') {
         document.getElementById('winnerDivTitleText').innerText = 'Winner:';
-        createIndividualText(0, json['winner']);
-        console.log(json['winner'])
+        createIndividualText(0, json['winner'], json['voting_style']);
       } else {
         document.getElementById('winnerDivTitleText').innerText = 'Winners:';
         for (winner in json['winner']) {
-          createIndividualText(winner, json['winner'][winner]);
+          createIndividualText(winner, json['winner'][winner], json['voting_style']);
         }
       }
     })
@@ -123,17 +122,19 @@
     }
   }
 
-  function getScoreType() {
-    {% if data.voting_style == 'average-voter' %}
+  function getScoreType(voting_style) {
+    if (voting_style == 'average-voter') {
       return 'Distance: ';
-    {% elif data.voting_style == 'ranked-choice' %}
+    }
+    if (voting_style == 'ranked-choice') {
       return 'Borda Score: ';
-    {% elif data.voting_style == 'plurality' %}
+    }
+    if (voting_style == 'plurality') {
       return 'Votes: ';
-    {% endif %}
+    }
   }
 
-  function createIndividualText(position, winner) {
+  function createIndividualText(position, winner, voting_style) {
     const winnerDiv = document.createElement('div');
     //give winnerDiv a class
     winnerDiv.className = 'flex justify-center py-0 px-10 font-bold';
@@ -149,7 +150,7 @@
 
     scoreDiv = document.createElement('div');
     scoreDiv.className = 'flex justify-center py-0 px-10 text-sm';
-    scoreText = document.createTextNode(getScoreType() + Math.round(parseFloat(winner[1]) * 100) / 100);
+    scoreText = document.createTextNode(getScoreType(voting_style) + Math.round(parseFloat(winner[1]) * 100) / 100);
     scoreDiv.appendChild(scoreText);
     document.querySelector('.winnersDiv').appendChild(scoreDiv);
   }

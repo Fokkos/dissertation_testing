@@ -107,7 +107,6 @@ class Data:
             return 'TODO'
 
     def findSingleWinner(self):
-        print(f'Single-Winner. voting style: {self.voting_style}')
         if self.voting_style == 'average-voter':
             return self.average_voter['distances'][0]
         if self.voting_style == 'ranked-choice':
@@ -117,16 +116,15 @@ class Data:
             return self.getPluralityVotes()[0]
 
     def findMultiWinner(self):
-        print(f'Multi-Winner. voting style: {self.voting_style}')
         winners = []
         if self.voting_style == 'average-voter':
-            for i in range(self.k):
+            for i in range(min(self.k, len(self.candidates))):
                 winners.append(self.average_voter['distances'][i])
         if self.voting_style == 'ranked-choice':
-            for i in range(self.k):
+            for i in range(min(self.k, len(self.candidates))):
                 winners.append(self.getBordaScores()[i])
         if self.voting_style == 'plurality':
-            for i in range(self.k):
+            for i in range(min(self.k, len(self.candidates))):
                 winners.append(self.getPluralityVotes()[i])
         return winners
 

@@ -160,14 +160,19 @@ def getWinner():
     jsonResp = {'winner': winners, 'election_type': data.election_type, 'voting_style': data.voting_style, 'k': data.k, 'distance_measure': data.distance_measure}
     return jsonify(jsonResp)
 
-@app.route('/changeElectionType', methods=['POST'])
-def changeElectionType():
+@app.route('/changeElectionSettings', methods=['POST'])
+def changeElectionSettings():
     @after_this_request
     def add_header(response):
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
+    data.distance_measure = request.form["distance_measure"]
+    data.voting_style = request.form["voting_style"]
     data.election_type = request.form["election_type"]
+
+    data.update_results()
+
     return jsonify(data.election_type)
 
 if __name__ == "__main__":

@@ -3,34 +3,36 @@
         <h2>Election Settings</h2>
     </div>
     <div class='flex justify-center'>
-        <div class="p-2 w-3/5  border-x-2 border-t-2">
-            <form action="{{ url_for('set_distance_measure') }}" class='flex space-x-2' method="POST">
-                <label class="block text-gray-700 mb-2" for="distance_measure">Distance Measure:</label>
-                <select class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="distance_measure" name="distance_measure" onchange="this.form.submit()">
-                    <option value="euclidean" {% if data.distance_measure == 'euclidean' %} selected {% endif %}>Euclidean</option>
-                    <option value="manhattan" {% if data.distance_measure == 'manhattan' %} selected {% endif %}>Manhattan</option>
-                    <option value="chebyshev" {% if data.distance_measure == 'chebyshev' %} selected {% endif %}>Chebyshev</option>
-                </select>
-            </form>
+        <div class="p-2 w-3/5  border-x-2 border-t-2 flex justify-center space-x-2">
+            <label class="block text-gray-700 mb-2" for="distance_measure">Distance Measure:</label>
+            <select class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                id="distance_measure" 
+                name="distance_measure" 
+                onchange="changeElectionSettings()">
+                <option value="euclidean" {% if data.distance_measure == 'euclidean' %} selected {% endif %}>Euclidean</option>
+                <option value="manhattan" {% if data.distance_measure == 'manhattan' %} selected {% endif %}>Manhattan</option>
+                <option value="chebyshev" {% if data.distance_measure == 'chebyshev' %} selected {% endif %}>Chebyshev</option>
+            </select>
         </div>
     </div>
     <div class='flex pt-2 border-2'>
-        <div class="p-2 w-1/2">
-            <form action="#" class='flex space-x-2' method="POST">
-                <label class="block text-gray-700 mb-2" for="distance_measure">Voting Style:</label>
-                <select class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="distance_measure" name="distance_measure" onchange="this.form.submit()">
-                    <option value="average-voter" {% if data.voting_style == 'average' %} selected {% endif %}>Average Voter</option>
-                    <option value="ranked-choice" {% if data.voting_style == 'ranked-choice' %} selected {% endif %}>Ranked Choice</option>
-                    <option value="plurality" {% if data.voting_style == 'plurality' %} selected {% endif %}>Plurality</option>
-                </select>
-            </form>
+        <div class="p-2 w-1/2 flex space-x-2">
+            <label class="block text-gray-700 mb-2" for="voting_style">Voting Style:</label>
+            <select class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                id="voting_style" 
+                name="voting_style" 
+                onchange="changeElectionSettings()">
+                <option value="average-voter" {% if data.voting_style == 'average' %} selected {% endif %}>Average Voter</option>
+                <option value="ranked-choice" {% if data.voting_style == 'ranked-choice' %} selected {% endif %}>Ranked Choice</option>
+                <option value="plurality" {% if data.voting_style == 'plurality' %} selected {% endif %}>Plurality</option>
+            </select>
         </div>
         <div class="p-2 w-1/2 flex space-x-2">
             <label class="block text-gray-700 mb-2" for="election_type">Election:</label>
             <select class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                 id="election_type" 
                 name="election_type" 
-                onchange="changeElectionType()">
+                onchange="changeElectionSettings()">
                 <option value="single-winner" {% if data.election_type == 'single-winner' %} selected {% endif %}>Single-Winner</option>
                 <option value="multi-winner" {% if data.election_type == 'multi-winner' %} selected {% endif %}>Multi-Winner</option>
                 <option value="participatory-budget" {% if data.election_type == 'participatory-budget' %} selected {% endif %}>Participatory Budget</option>
@@ -40,12 +42,15 @@
 </div>
 
 <script>
-    function changeElectionType(){
-        console.log('changing election type');
+    function changeElectionSettings(){
+        let distance_measure = document.getElementById('distance_measure').value;
+        let voting_style = document.getElementById('voting_style').value;
         let election_type = document.getElementById('election_type').value;
         formData = new FormData();
+        formData.append("distance_measure", distance_measure)
+        formData.append("voting_style", voting_style);
         formData.append("election_type", election_type);
-        fetch('/changeElectionType', {
+        fetch('/changeElectionSettings', {
             method: 'POST',
             body: formData
         })
@@ -55,9 +60,20 @@
             console.log(showElectionSettings)
             showElectionSettings.innerHTML = `Candidates: {{ data.candidates | length }} <br>
                 Voters: {{ data.voters | length }} <br>
-                Distance Measure: {{ data.distance_measure }} <br>
-                Election Type: ${election_type.replace(/-/g," ")} <br>
-                Voting Style: {{ data.voting_style }} <br>`;
+                Distance Measure: ${distance_measure} <br>
+                Election Type: ${election_type} <br>
+                Voting Style: ${voting_style} <br>`;
+        // for results, we want to refresh the page to reset the distances
+        {% elif type == 'results' %}
+            if (distance_measure != '{{data.distance_measure}}') {
+                // timeout for 0.01 seconds to allow the server to update the election settings
+                setTimeout(function(){
+                    location.reload();
+                }, 10);
+                // then reload the page
+                location.reload();
+            }
         {% endif %}
+
     }
 </script>
