@@ -111,6 +111,7 @@ class Data:
         if self.voting_style == 'average-voter':
             return self.average_voter['distances'][0]
         if self.voting_style == 'ranked-choice':
+            print(self.getBordaScores())
             return self.getBordaScores()[0]
         if self.voting_style == 'plurality':
             return self.getPluralityVotes()[0]

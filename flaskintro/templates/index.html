@@ -98,16 +98,16 @@
     fetch(url)
     .then(response => response.json())  
     .then(json => {
-
-      {% if data.election_type == 'single-winner' %}
+      if (json['election_type'] == 'single-winner') {
         document.getElementById('winnerDivTitleText').innerText = 'Winner:';
         createIndividualText(0, json['winner']);
-      {% else %}
+        console.log(json['winner'])
+      } else {
         document.getElementById('winnerDivTitleText').innerText = 'Winners:';
         for (winner in json['winner']) {
           createIndividualText(winner, json['winner'][winner]);
         }
-      {% endif %}
+      }
     })
   }
 

@@ -157,7 +157,7 @@ def getWinner():
 
     winners = data.findWinner()
 
-    jsonResp = {'winner': winners}
+    jsonResp = {'winner': winners, 'election_type': data.election_type, 'voting_style': data.voting_style, 'k': data.k, 'distance_measure': data.distance_measure}
     return jsonify(jsonResp)
 
 @app.route('/changeElectionType', methods=['POST'])
