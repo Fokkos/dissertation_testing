@@ -7,10 +7,10 @@ class Data:
         self.variables = 2
         # distance measures are 'euclidean', 'manhattan' and 'chebyshev'
         self.distance_measure = 'euclidean'
-        # election types are 'single-winner', 'multi-winner' and 'participatory-budgeting'
+        # election types are 'single-winner', 'multi-winner' and 'participatory-budget'
         self.election_type = 'multi-winner'
         # voting styles are 'average-voter', 'ranked-choice' and 'plurality'
-        self.voting_style = 'plurality'
+        self.voting_style = 'ranked-choice'
         self.results = False
         self.variable_names = ['x', 'y']
         self.min = 0
@@ -127,8 +127,10 @@ class Data:
         if self.voting_style == 'plurality':
             for i in range(self.k):
                 winners.append(self.getPluralityVotes()[i])
-        
         return winners
+
+    def findBudget(self):
+        return 'TODO'
 
     # for ranked-choice elections, finds the Borda score of each candidate
     def getBordaScores(self):

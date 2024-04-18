@@ -2,8 +2,8 @@
     <div class='flex justify-center'>
         <h2>Election Settings</h2>
     </div>
-    <div class='flex'>
-        <div class="mb-1 w-1/2">
+    <div class='flex justify-center'>
+        <div class="p-2 w-3/5  border-x-2 border-t-2">
             <form action="{{ url_for('set_distance_measure') }}" class='flex space-x-2' method="POST">
                 <label class="block text-gray-700 mb-2" for="distance_measure">Distance Measure:</label>
                 <select class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="distance_measure" name="distance_measure" onchange="this.form.submit()">
@@ -13,16 +13,51 @@
                 </select>
             </form>
         </div>
-
-        <div class="mb-1 w-1/2">
+    </div>
+    <div class='flex pt-2 border-2'>
+        <div class="p-2 w-1/2">
             <form action="#" class='flex space-x-2' method="POST">
-                <label class="block text-gray-700 mb-2" for="election_type">Election:</label>
-                <select class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="election_type" name="election_type" onchange="this.form.submit()">
-                    <option value="Single-Winner" {% if data.distance_measure == 'euclidean' %} selected {% endif %}>Single-Winner</option>
-                    <option value="Multi-Winner" {% if data.distance_measure == 'manhattan' %} selected {% endif %}>Multi-Winner</option>
-                    <option value="Participatory Budgeting" {% if data.distance_measure == 'chebyshev' %} selected {% endif %}>Participatory Budget</option>
+                <label class="block text-gray-700 mb-2" for="distance_measure">Voting Style:</label>
+                <select class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="distance_measure" name="distance_measure" onchange="this.form.submit()">
+                    <option value="average-voter" {% if data.voting_style == 'average' %} selected {% endif %}>Average Voter</option>
+                    <option value="ranked-choice" {% if data.voting_style == 'ranked-choice' %} selected {% endif %}>Ranked Choice</option>
+                    <option value="plurality" {% if data.voting_style == 'plurality' %} selected {% endif %}>Plurality</option>
                 </select>
             </form>
         </div>
+        <div class="p-2 w-1/2 flex space-x-2">
+            <label class="block text-gray-700 mb-2" for="election_type">Election:</label>
+            <select class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                id="election_type" 
+                name="election_type" 
+                onchange="changeElectionType()">
+                <option value="single-winner" {% if data.election_type == 'single-winner' %} selected {% endif %}>Single-Winner</option>
+                <option value="multi-winner" {% if data.election_type == 'multi-winner' %} selected {% endif %}>Multi-Winner</option>
+                <option value="participatory-budget" {% if data.election_type == 'participatory-budget' %} selected {% endif %}>Participatory Budget</option>
+            </select>
+        </div>
     </div>
 </div>
+
+<script>
+    function changeElectionType(){
+        console.log('changing election type');
+        let election_type = document.getElementById('election_type').value;
+        formData = new FormData();
+        formData.append("election_type", election_type);
+        fetch('/changeElectionType', {
+            method: 'POST',
+            body: formData
+        })
+
+        {% if type == 'home' %}
+            showElectionSettings = document.getElementById('showElectionSettings');
+            console.log(showElectionSettings)
+            showElectionSettings.innerHTML = `Candidates: {{ data.candidates | length }} <br>
+                Voters: {{ data.voters | length }} <br>
+                Distance Measure: {{ data.distance_measure }} <br>
+                Election Type: ${election_type.replace(/-/g," ")} <br>
+                Voting Style: {{ data.voting_style }} <br>`;
+        {% endif %}
+    }
+</script>

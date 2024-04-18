@@ -160,5 +160,15 @@ def getWinner():
     jsonResp = {'winner': winners}
     return jsonify(jsonResp)
 
+@app.route('/changeElectionType', methods=['POST'])
+def changeElectionType():
+    @after_this_request
+    def add_header(response):
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+
+    data.election_type = request.form["election_type"]
+    return jsonify(data.election_type)
+
 if __name__ == "__main__":
     app.run(debug=True)
