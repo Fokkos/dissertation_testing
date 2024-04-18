@@ -10,7 +10,7 @@ class Data:
         # election types are 'single-winner', 'multi-winner' and 'participatory-budgeting'
         self.election_type = 'multi-winner'
         # voting styles are 'average-voter', 'ranked-choice' and 'plurality'
-        self.voting_style = 'ranked-choice'
+        self.voting_style = 'average-voter'
         self.results = False
         self.variable_names = ['x', 'y']
         self.min = 0
@@ -109,9 +109,9 @@ class Data:
     def findSingleWinner(self):
         print(f'Single-Winner. voting style: {self.voting_style}')
         if self.voting_style == 'average-voter':
-            return self.average_voter['distances'][0][0]
+            return self.average_voter['distances'][0]
         if self.voting_style == 'ranked-choice':
-            return self.findBordaScores()[0][0]
+            return self.findBordaScores()[0]
         if self.voting_style == 'plurality':
             return 'TODO'
 
@@ -120,10 +120,10 @@ class Data:
         winners = []
         if self.voting_style == 'average-voter':
             for i in range(self.k):
-                winners.append(self.average_voter['distances'][i][0])
+                winners.append(self.average_voter['distances'][i])
         if self.voting_style == 'ranked-choice':
             for i in range(self.k):
-                winners.append(self.findBordaScores()[i][0])
+                winners.append(self.findBordaScores()[i])
         if self.voting_style == 'plurality':
             return 'TODO'
         

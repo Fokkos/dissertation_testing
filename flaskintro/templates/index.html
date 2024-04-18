@@ -58,7 +58,7 @@
       </div>
       <div class='winnersDiv'></div>
       <div class='flex justify-center'>
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" onclick="closeModal('winnerModal')">Close</button>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mt-2 rounded focus:outline-none focus:shadow-outline" onclick="closeModal('winnerModal')">Close</button>
       </div>
       
     </div>
@@ -78,7 +78,7 @@
       
       // clear the winnersDiv
       document.querySelector('.winnersDiv').innerHTML = '';
-      
+
       // get the Winner of the election
       getWinner()
 
@@ -101,7 +101,6 @@
 
       {% if data.election_type == 'single-winner' %}
         document.getElementById('winnerDivTitleText').innerText = 'Winner:';
-        console.log(json['winner']);
         createIndividualText(0, json['winner']);
       {% else %}
         document.getElementById('winnerDivTitleText').innerText = 'Winners:';
@@ -114,31 +113,45 @@
 
   function getTextSize(position){
     if (position == 0){
-      return ['text-5xl', 'font-bold'];
-    } else if (position == 1){
-      return ['text-4xl'];
-    } else if (position == 2){
       return ['text-3xl'];
-    } else if (position == 3){
+    } else if (position == 1){
       return ['text-2xl'];
-    } else {
+    } else if (position == 2){
       return ['text-xl'];
+    } else {
+      return ['text-lg'];
     }
+  }
+
+  function getScoreType() {
+    {% if data.voting_style == 'average-voter' %}
+      return 'Distance: ';
+    {% elif data.voting_style == 'ranked-choice' %}
+      return 'Borda Score: ';
+    {% elif data.voting_style == 'plurality' %}
+      return 'Votes: ';
+    {% endif %}
   }
 
   function createIndividualText(position, winner) {
     const winnerDiv = document.createElement('div');
     //give winnerDiv a class
-    winnerDiv.className = 'flex justify-center pt-2 pb-4 px-10';
+    winnerDiv.className = 'flex justify-center py-0 px-10 font-bold';
     // get the text size of the current position and add it to the winnerDiv
     // spread operator to add multiple classes (...list)
     winnerDiv.classList.add(...getTextSize(position));
     //create a text node with the winner name
-    const winnerText = document.createTextNode('#' + (parseInt(position)+1) + ': ' + winner);
+    const winnerText = document.createTextNode('#' + (parseInt(position)+1) + ': ' + winner[0]);
     //append the text node to the winnerDiv
     winnerDiv.appendChild(winnerText);
     //append the winnerDiv to the winnersDiv
     document.querySelector('.winnersDiv').appendChild(winnerDiv);
+
+    scoreDiv = document.createElement('div');
+    scoreDiv.className = 'flex justify-center py-0 px-10 text-sm';
+    scoreText = document.createTextNode(getScoreType() + Math.round(parseFloat(winner[1]) * 100) / 100);
+    scoreDiv.appendChild(scoreText);
+    document.querySelector('.winnersDiv').appendChild(scoreDiv);
   }
 </script>
 
