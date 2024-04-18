@@ -10,7 +10,7 @@ class Data:
         # election types are 'single-winner', 'multi-winner' and 'participatory-budgeting'
         self.election_type = 'multi-winner'
         # voting styles are 'average-voter', 'ranked-choice' and 'plurality'
-        self.voting_style = 'average-voter'
+        self.voting_style = 'plurality'
         self.results = False
         self.variable_names = ['x', 'y']
         self.min = 0
@@ -111,9 +111,9 @@ class Data:
         if self.voting_style == 'average-voter':
             return self.average_voter['distances'][0]
         if self.voting_style == 'ranked-choice':
-            return self.findBordaScores()[0]
+            return self.getBordaScores()[0]
         if self.voting_style == 'plurality':
-            return 'TODO'
+            return self.getPluralityVotes()[0]
 
     def findMultiWinner(self):
         print(f'Multi-Winner. voting style: {self.voting_style}')
@@ -123,14 +123,15 @@ class Data:
                 winners.append(self.average_voter['distances'][i])
         if self.voting_style == 'ranked-choice':
             for i in range(self.k):
-                winners.append(self.findBordaScores()[i])
+                winners.append(self.getBordaScores()[i])
         if self.voting_style == 'plurality':
-            return 'TODO'
+            for i in range(self.k):
+                winners.append(self.getPluralityVotes()[i])
         
         return winners
 
-    # for ranked-choice elections, we need to find the Borda score of each candidate
-    def findBordaScores(self):
+    # for ranked-choice elections, finds the Borda score of each candidate
+    def getBordaScores(self):
         borda_scores = {}
         for candidate in self.candidates:
             borda_scores[candidate['id']] = 0
@@ -139,6 +140,17 @@ class Data:
                 borda_scores[voter['distances'][i][0]] += len(self.candidates) - i
         # sort the scores by highest to lowest
         return sorted(list(borda_scores.items()), key=lambda x: x[1], reverse=True)
+
+    # for plurality elections, finds the number of votes each candidate received
+    def getPluralityVotes(self):
+        votes = {}
+        for candidate in self.candidates:
+            votes[candidate['id']] = 0
+        for voter in self.voters:
+            votes[voter['distances'][0][0]] += 1
+        print(votes)
+        # sort the votes by highest to lowest
+        return sorted(list(votes.items()), key=lambda x: x[1], reverse=True)
 
 
     
