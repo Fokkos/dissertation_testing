@@ -6,7 +6,7 @@ class Data:
         self.voters = []
         self.variables = 2
         self.distance_measure = 'euclidean'
-        self.election_type = 'single-winner'
+        self.election_type = 'multi-winner'
         self.voting_style = 'average-voter'
         self.results = False
         self.variable_names = ['x', 'y']
@@ -14,6 +14,9 @@ class Data:
         self.max = 10
         self.default_min = True
         self.average_voter = self.create_average_voter()
+
+        # k value for multi-winner elections
+        self.k = 10
 
     def assign_default_variable_names(self):
         self.delete_data()
@@ -91,6 +94,34 @@ class Data:
                     total += float(voter[i])
                 average_voter[i] = format(total / len(self.voters), ".2f")
             return average_voter
+
+    def findWinner(self):
+        if self.election_type == 'single-winner':
+            return self.findSingleWinner()
+        if self.election_type == 'multi-winner':
+            return self.findMultiWinner()
+        if self.election_type == 'participatory-budgeting':
+            return 'TODO'
+
+    def findSingleWinner(self):
+        print(f'Single-Winner. voting style: {self.voting_style}')
+        if self.voting_style == 'average-voter':
+            return self.average_voter['distances'][0][0]
+        if self.voting_style == 'plurality':
+            return 'TODO'
+
+    def findMultiWinner(self):
+        print(f'Multi-Winner. voting style: {self.voting_style}')
+        if self.voting_style == 'average-voter':
+            winners = []
+            for i in range(self.k):
+                winners.append(self.average_voter['distances'][i][0])
+            return winners
+        if self.voting_style == 'plurality':
+            return 'TODO'
+
+
+    
 
 
     

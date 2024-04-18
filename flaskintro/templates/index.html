@@ -53,11 +53,10 @@
   <div id="winnerModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
     <div id='winnerModalOverlay' class="bg-gray-500 bg-opacity-50 fixed inset-0 transition-opacity"></div> <!-- Background overlay -->
     <div class="bg-white rounded-lg border-2 px-8 py-4 max-w-m relative"> <!-- Relative positioning for overlay -->
-      <div class='text-3xl flex justify-center'>
-        <h2><strong>Winner:</strong></h2>
-      </div>
-      <div class='text-5xl flex justify-center py-5 px-10'>
-        <h2 id='winner-text'><strong>null</strong></h2>
+      <div class='winnersDiv'>
+        <div class='text-3xl flex justify-center'>
+          <h2 id='winnerDivTitleText'><strong>Winner:</strong></h2>
+        </div>
       </div>
       <div class='flex justify-center'>
         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" onclick="closeModal('winnerModal')">Close</button>
@@ -77,10 +76,12 @@
 
   function findWinner() {
     if (checkResultsValidation()) {
+      
+      // get the Winner of the election
+      getWinner()
+
       // open the modal
       openModal('winnerModal');
-
-      document.getElementById('winner-text').innerText = '{{ data.average_voter['distances'][0][0] }}';
 
       // confetti
       confetti({
@@ -88,6 +89,54 @@
         spread: 100
       });
     }
+  }
+
+  function getWinner() {
+    const url = "{{ url_for('getWinner') }}"
+    fetch(url)
+    .then(response => response.json())  
+    .then(json => {
+
+      {% if data.election_type == 'single-winner' %}
+        document.getElementById('winnerDivTitleText').innerText = 'Winner:';
+        console.log(json['winner']);
+        createIndividualText(0, json['winner']);
+      {% else %}
+        document.getElementById('winnerDivTitleText').innerText = 'Winners:';
+        for (winner in json['winner']) {
+          createIndividualText(winner, json['winner'][winner]);
+        }
+      {% endif %}
+    })
+  }
+
+  function getTextSize(position){
+    if (position == 0){
+      return ['text-5xl', 'font-bold'];
+    } else if (position == 1){
+      return ['text-4xl'];
+    } else if (position == 2){
+      return ['text-3xl'];
+    } else if (position == 3){
+      return ['text-2xl'];
+    } else {
+      return ['text-xl'];
+    }
+  }
+
+  function createIndividualText(position, winner) {
+    const winnerDiv = document.createElement('div');
+    //give winnerDiv a class
+    winnerDiv.className = 'flex justify-center pt-2 pb-4 px-10';
+    // get the text size of the current position and add it to the winnerDiv
+    // spread operator to add multiple classes (...list)
+    winnerDiv.classList.add(...getTextSize(position));
+    //create a text node with the winner name
+    const winnerText = document.createTextNode('#' + (parseInt(position)+1) + ': ' + winner);
+    //append the text node to the winnerDiv
+    winnerDiv.appendChild(winnerText);
+    //append the winnerDiv to the winnersDiv
+    document.querySelector('.winnersDiv').appendChild(winnerDiv);
   }
 </script>
 

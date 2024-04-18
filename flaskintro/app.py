@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, url_for, request, redirect, jsonify, after_this_request
 from csv_handler import process_csv
 from data import Data
 
@@ -145,9 +145,20 @@ def visualisations():
                 if candidate['id'] == id:
                     default_candidates.append(candidate)
                     break
-    print(default_candidates)
     return render_template('visualisations.html', data=data, 
         default_candidates=default_candidates, type='visualisations')
+
+@app.route('/getWinner', methods=['GET'])
+def getWinner():
+    @after_this_request
+    def add_header(response):
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+
+    winners = data.findWinner()
+
+    jsonResp = {'winner': winners}
+    return jsonify(jsonResp)
 
 if __name__ == "__main__":
     app.run(debug=True)
