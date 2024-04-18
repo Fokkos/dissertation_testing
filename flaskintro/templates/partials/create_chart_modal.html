@@ -41,7 +41,7 @@
                                 onclick="selectAll('candidate')">
                             <label for="select_all_candidate">Select all</label>
                         </div>
-                        <div class="max-h-52 overflow-y-scroll">
+                        <div class="max-h-52 overflow-y-scroll overscroll-x-contain">
                             {% for candidate in data.candidates %}
                                 <div class="flex justify-items-start">
                                     <input 
@@ -71,7 +71,7 @@
                                 onclick="selectAll('voter')">
                             <label for="select_all_voter">Select all</label>
                         </div>
-                        <div class="max-h-52 overflow-y-scroll">
+                        <div class="max-h-52 overflow-y-scroll overscroll-x-contain">
                             <div class="flex justify-items-start border-b-2" id='average_voter_chartks_modal'>
                                 <input 
                                     class="m-2" 
@@ -114,7 +114,7 @@
                                     onclick="selectAll('graph_variable')">
                                 <label for="select_all_graph_variable">Select all</label>
                             </div>
-                            <div class="max-h-52 overflow-y-scroll">
+                            <div class="max-h-52 overflow-y-scroll overscroll-x-contain">
                                 {% for var in range(data.variables) %}
                                 <div class="flex justify-center">
                                     <div class="w-1/2 flex justify-start">

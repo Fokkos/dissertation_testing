@@ -5,9 +5,12 @@ class Data:
         self.candidates = []
         self.voters = []
         self.variables = 2
+        # distance measures are 'euclidean', 'manhattan' and 'chebyshev'
         self.distance_measure = 'euclidean'
+        # election types are 'single-winner', 'multi-winner' and 'participatory-budgeting'
         self.election_type = 'multi-winner'
-        self.voting_style = 'average-voter'
+        # voting styles are 'average-voter', 'ranked-choice' and 'plurality'
+        self.voting_style = 'ranked-choice'
         self.results = False
         self.variable_names = ['x', 'y']
         self.min = 0
@@ -107,18 +110,35 @@ class Data:
         print(f'Single-Winner. voting style: {self.voting_style}')
         if self.voting_style == 'average-voter':
             return self.average_voter['distances'][0][0]
+        if self.voting_style == 'ranked-choice':
+            return self.findBordaScores()[0][0]
         if self.voting_style == 'plurality':
             return 'TODO'
 
     def findMultiWinner(self):
         print(f'Multi-Winner. voting style: {self.voting_style}')
+        winners = []
         if self.voting_style == 'average-voter':
-            winners = []
             for i in range(self.k):
                 winners.append(self.average_voter['distances'][i][0])
-            return winners
+        if self.voting_style == 'ranked-choice':
+            for i in range(self.k):
+                winners.append(self.findBordaScores()[i][0])
         if self.voting_style == 'plurality':
             return 'TODO'
+        
+        return winners
+
+    # for ranked-choice elections, we need to find the Borda score of each candidate
+    def findBordaScores(self):
+        borda_scores = {}
+        for candidate in self.candidates:
+            borda_scores[candidate['id']] = 0
+        for voter in self.voters:
+            for i in range(len(self.candidates)):
+                borda_scores[voter['distances'][i][0]] += len(self.candidates) - i
+        # sort the scores by highest to lowest
+        return sorted(list(borda_scores.items()), key=lambda x: x[1], reverse=True)
 
 
     

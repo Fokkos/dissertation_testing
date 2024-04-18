@@ -53,11 +53,10 @@
   <div id="winnerModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
     <div id='winnerModalOverlay' class="bg-gray-500 bg-opacity-50 fixed inset-0 transition-opacity"></div> <!-- Background overlay -->
     <div class="bg-white rounded-lg border-2 px-8 py-4 max-w-m relative"> <!-- Relative positioning for overlay -->
-      <div class='winnersDiv'>
-        <div class='text-3xl flex justify-center'>
-          <h2 id='winnerDivTitleText'><strong>Winner:</strong></h2>
-        </div>
+      <div class='text-3xl flex justify-center'>
+        <h2 id='winnerDivTitleText'><strong>Winner:</strong></h2>
       </div>
+      <div class='winnersDiv'></div>
       <div class='flex justify-center'>
         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" onclick="closeModal('winnerModal')">Close</button>
       </div>
@@ -76,6 +75,9 @@
 
   function findWinner() {
     if (checkResultsValidation()) {
+      
+      // clear the winnersDiv
+      document.querySelector('.winnersDiv').innerHTML = '';
       
       // get the Winner of the election
       getWinner()
