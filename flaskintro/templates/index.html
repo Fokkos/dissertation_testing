@@ -120,7 +120,7 @@
         createIndividualText(0, json['winner'], json['voting_style'], json['election_type']);
       } else {
         document.getElementById('winnerDivTitleText').innerText = 'Winners:';
-        for (winner in json['winner']) {
+        for (winner in json['winner'].slice(0, 10)) {
           createIndividualText(winner, json['winner'][winner], json['voting_style'], json['election_type']);
         }
         if (json['election_type'] == 'participatory-budget') {
@@ -130,6 +130,16 @@
           let winnerText = document.createTextNode('Remaining Budget: ' + json['remaining_budget']);
           winnerDiv.appendChild(winnerText);
           document.querySelector('.winnersDiv').appendChild(winnerDiv);
+
+          if (json['winner'].length > 10) {
+            let winnerDiv = document.createElement('div');
+            winnerDiv.className = 'flex justify-center pt-3 px-10 text-sm font-bold';
+            let winnerLink = document.createElement('a');
+            winnerLink.href = "/winners";
+            winnerLink.innerText = 'Too many winners to display, click here to see all winners.';
+            winnerDiv.appendChild(winnerLink);
+            document.querySelector('.winnersDiv').appendChild(winnerDiv);
+          }
         }
       }
     })
