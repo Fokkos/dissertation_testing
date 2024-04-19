@@ -30,12 +30,7 @@
       <div class='font-bold text-2xl text-center'>
         <h1>Election Settings</h1>
       </div>
-      <p class="text-center" id='showElectionSettings'> Candidates: {{ data.candidates | length }} <br>
-        Voters: {{ data.voters | length }} <br>
-        Distance Measure: {{ data.distance_measure }} <br>
-        Election Type: {{ data.election_type }} <br>
-        Voting Style: {{ data.voting_style }} <br>
-      </p>
+      <p class="text-center" id='showElectionSettings'>Getting settings...</p>
     </div>
   </div>
     
@@ -65,6 +60,28 @@
   </div>
 
 <script>
+  // on load, show the election settings
+  function setElectionSettingsText() {
+    electionText = 
+      "Candidates: {{ data.candidates | length }} <br>" +
+      "Voters: {{ data.voters | length }} <br>" +
+      "Distance Measure: {{ data.distance_measure }} <br>" +
+      "Election Type: {{ data.election_type }} <br>" +
+      "Voting Style: {{ data.voting_style }} <br>";
+  
+    {% if data.election_type == 'multi-winner' %}
+      electionText += "K-Value: {{ data.k }} <br>";
+    {% elif data.election_type == 'participatory-budget' %}
+      electionText += "Budget: {{ data.budget }} <br>";
+    {% endif %}
+
+    return electionText;
+  }
+  
+  window.onload = function() {
+    document.getElementById('showElectionSettings').innerHTML = setElectionSettingsText();
+  }
+
   function checkResultsValidation() {
     if ({{ data.voters | length }} < 1 || {{ data.candidates | length }} < 2) {
       alert('Need at least 1 voter and 2 candidates to calculate results');

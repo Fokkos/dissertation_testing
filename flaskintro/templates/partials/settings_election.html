@@ -49,7 +49,7 @@
                 step = "1"
                 min = "1"
                 max = "10"
-                value = "1"
+                value = "{{data.k}}"
                 name="k_value"
                 onchange="changeElectionSettings()"
                 required>
@@ -72,7 +72,7 @@
                 type="number" 
                 step = "1"
                 min = "1"
-                value = "100"
+                value = "{{data.budget}}"
                 name="budget"
                 onchange="changeElectionSettings()"
                 required>
@@ -98,6 +98,23 @@
         let election_type = document.getElementById('election_type').value;
         let k = document.getElementById('k_value').value;
         let budget = document.getElementById('budget').value;
+
+        // todo change value in the form itself
+        if (k < 1) {
+            k = 1
+            document.getElementById('k_value').value = 1
+            alert('K-Value must be at least 1')
+        }
+        if (k > 10) {
+            k = 10
+            document.getElementById('k_value').value = 10
+            alert('K-Value must be at most 10')
+        }
+        if (budget < 1) {
+            budget = 1
+            document.getElementById('budget').value = 1
+            alert('Budget must be at least 1')
+        }
 
         // add the election settings to the form data to be sent to the backend
         formData = new FormData();
