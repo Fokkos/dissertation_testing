@@ -167,10 +167,14 @@ def changeElectionSettings():
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
+    # update the data object with the new settings
     data.distance_measure = request.form["distance_measure"]
     data.voting_style = request.form["voting_style"]
     data.election_type = request.form["election_type"]
+    data.k = int(request.form["k"])
+    data.budget = int(request.form["budget"])
 
+    # update the results so that findWinnner() uses the new settings
     data.update_results()
 
     return jsonify(data.election_type)

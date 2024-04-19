@@ -39,17 +39,75 @@
             </select>
         </div>
     </div>
+    <div class='flex p-2 border-x-2 border-b-2'>
+        <div class="w-1/2 flex space-x-2 items-center">
+            <label class="block text-gray-700" for="k_value">K-Value:</label>
+            <input 
+                class="shadow appearance-none border rounded w-3/5 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="k_value" 
+                type="number" 
+                step = "1"
+                min = "1"
+                max = "10"
+                value = "1"
+                name="k_value"
+                onchange="changeElectionSettings()"
+                required>
+            <p 
+                data-tooltip-target="k-value-tooltip" 
+                class="">
+                <!--material ui question mark span-->
+                <span class="material-icons text-zinc-500 scale-75">help</span>
+            </p>
+            <div id="k-value-tooltip" role="tooltip" class="text-center absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                Used for multi-winner elections. <br>The number of winners to be elected.
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+        </div>
+        <div class="w-1/2 flex space-x-2 items-center">
+            <label class="block text-gray-700" for="budget">Budget:</label>
+            <input 
+                class="shadow appearance-none border rounded w-3/5 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="budget" 
+                type="number" 
+                step = "1"
+                min = "1"
+                value = "100"
+                name="budget"
+                onchange="changeElectionSettings()"
+                required>
+            <p 
+                data-tooltip-target="budget-tooltip" 
+                class="">
+                <!--material ui question mark span-->
+                <span class="material-icons text-zinc-500 scale-75">help</span>
+            </p>
+            <div id="budget-tooltip" role="tooltip" class="text-center absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                Used for participatory budget elections. <br>The total budget to be allocated.
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
     function changeElectionSettings(){
+        // get all the election settings values from the form
         let distance_measure = document.getElementById('distance_measure').value;
         let voting_style = document.getElementById('voting_style').value;
         let election_type = document.getElementById('election_type').value;
+        let k = document.getElementById('k_value').value;
+        let budget = document.getElementById('budget').value;
+
+        // add the election settings to the form data to be sent to the backend
         formData = new FormData();
         formData.append("distance_measure", distance_measure)
         formData.append("voting_style", voting_style);
         formData.append("election_type", election_type);
+        formData.append("k", k);
+        formData.append("budget", budget);
+
+        // send the form data to the backend
         fetch('/changeElectionSettings', {
             method: 'POST',
             body: formData
@@ -58,11 +116,19 @@
         {% if type == 'home' %}
             showElectionSettings = document.getElementById('showElectionSettings');
             console.log(showElectionSettings)
-            showElectionSettings.innerHTML = `Candidates: {{ data.candidates | length }} <br>
+            let settingsText = 
+                `Candidates: {{ data.candidates | length }} <br>
                 Voters: {{ data.voters | length }} <br>
                 Distance Measure: ${distance_measure} <br>
                 Election Type: ${election_type} <br>
-                Voting Style: ${voting_style} <br>`;
+                Voting Style: ${voting_style} <br>`
+            if (election_type == 'multi-winner') {
+                settingsText += `K-Value: ${k} <br>`
+            } else if (election_type == 'participatory-budget') {
+                settingsText += `Budget: ${budget} <br>`
+            }
+
+            showElectionSettings.innerHTML = settingsText
         // for results, we want to refresh the page to reset the distances
         {% elif type == 'results' %}
             if (distance_measure != '{{data.distance_measure}}') {

@@ -21,6 +21,9 @@ class Data:
         # k value for multi-winner elections
         self.k = 10
 
+        # budget for participatory budgeting elections
+        self.budget = 100
+
     def assign_default_variable_names(self):
         self.delete_data()
         self.default_min = True
