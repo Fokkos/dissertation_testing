@@ -17,6 +17,7 @@ def process_csv(file, data):
     for i in range(len(df)):
         candidate = {}
         candidate['id'] = df.iloc[i, 0]
+        candidate['cost'] = 10
         for j in range(len(variable_names)):
             candidate[j] = format(float(df.iloc[i, j + 1]), ".2f")
         data.candidates.append(candidate)

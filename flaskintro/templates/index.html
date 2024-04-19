@@ -117,11 +117,19 @@
     .then(json => {
       if (json['election_type'] == 'single-winner') {
         document.getElementById('winnerDivTitleText').innerText = 'Winner:';
-        createIndividualText(0, json['winner'], json['voting_style']);
+        createIndividualText(0, json['winner'], json['voting_style'], json['election_type']);
       } else {
         document.getElementById('winnerDivTitleText').innerText = 'Winners:';
         for (winner in json['winner']) {
-          createIndividualText(winner, json['winner'][winner], json['voting_style']);
+          createIndividualText(winner, json['winner'][winner], json['voting_style'], json['election_type']);
+        }
+        if (json['election_type'] == 'participatory-budget') {
+          console.log(json['remaining_budget']);
+          let winnerDiv = document.createElement('div');
+          winnerDiv.className = 'flex justify-center pt-3 px-10 text-sm font-bold';
+          let winnerText = document.createTextNode('Remaining Budget: ' + json['remaining_budget']);
+          winnerDiv.appendChild(winnerText);
+          document.querySelector('.winnersDiv').appendChild(winnerDiv);
         }
       }
     })
@@ -151,7 +159,7 @@
     }
   }
 
-  function createIndividualText(position, winner, voting_style) {
+  function createIndividualText(position, winner, voting_style, election_type) {
     const winnerDiv = document.createElement('div');
     //give winnerDiv a class
     winnerDiv.className = 'flex justify-center py-0 px-10 font-bold';
@@ -167,7 +175,11 @@
 
     scoreDiv = document.createElement('div');
     scoreDiv.className = 'flex justify-center py-0 px-10 text-sm';
-    scoreText = document.createTextNode(getScoreType(voting_style) + Math.round(parseFloat(winner[1]) * 100) / 100);
+    let scoreText = (getScoreType(voting_style) + Math.round(parseFloat(winner[1]) * 100) / 100);
+    if (election_type == 'participatory-budget') {
+      scoreText += (",   Cost: " + winner[2]);
+    }
+    scoreText = document.createTextNode(scoreText);
     scoreDiv.appendChild(scoreText);
     document.querySelector('.winnersDiv').appendChild(scoreDiv);
   }

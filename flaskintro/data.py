@@ -68,6 +68,8 @@ class Data:
     def extract_point(self, form):
         points = {}
         points['id'] = form['id']
+        if 'cost' in form:
+            points['cost'] = int(form['cost'])
         for i in range(self.variables):
             points[i] = format(float(form['variable_' + str(i)]), ".2f")
         return points
@@ -106,8 +108,8 @@ class Data:
             return self.findSingleWinner()
         if self.election_type == 'multi-winner':
             return self.findMultiWinner()
-        if self.election_type == 'participatory-budgeting':
-            return 'TODO'
+        if self.election_type == 'participatory-budget':
+            return self.findBudget()
 
     def findSingleWinner(self):
         if self.voting_style == 'average-voter':
@@ -132,7 +134,31 @@ class Data:
         return winners
 
     def findBudget(self):
-        return 'TODO'
+        # todo implement participatory budgeting
+        winners = []
+        budget = self.budget
+        if self.voting_style == 'average-voter':
+            for i in range(len(self.candidates)):
+                # get the cost of the candidate in position i of average voter
+                candidate_id = self.average_voter['distances'][i][0]
+                for candidate in self.candidates:
+                    if candidate['id'] == candidate_id:
+                        cost = candidate['cost']
+                        break
+
+                # if the cost is less than the budget, add the candidate to the winners
+                if cost <= budget:
+                    id, metric = self.average_voter['distances'][i]
+                    winners.append((id, metric, cost))
+                    budget -= cost
+                
+        if self.voting_style == 'ranked-choice':
+            for i in range(min(self.k, len(self.candidates))):
+                winners.append(self.getBordaScores()[i])
+        if self.voting_style == 'plurality':
+            for i in range(min(self.k, len(self.candidates))):
+                winners.append(self.getPluralityVotes()[i])
+        return budget, winners
 
     # for ranked-choice elections, finds the Borda score of each candidate
     def getBordaScores(self):

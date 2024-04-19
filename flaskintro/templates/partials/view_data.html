@@ -29,6 +29,9 @@
                 <form action="{{url_for('delete_' + type)}}" method="post">
                     <input type="hidden" name="location" value="index"/>
                     <input type="hidden" name="id" value="{{ datapoint["id"] }}"/>
+                    {% if datapoint['cost'] %}
+                        <input type="hidden" name="cost" value="{{ datapoint['cost'] }}"/>
+                    {% endif %}
                     {% for i in range(data.variables) %}
                     <input type="hidden" name="variable_{{ i }}" value="{{ datapoint[i] }}"/>
                     {% endfor %}

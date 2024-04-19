@@ -99,7 +99,7 @@
         let k = document.getElementById('k_value').value;
         let budget = document.getElementById('budget').value;
 
-        // todo change value in the form itself
+        // Validation for the k-value and budget
         if (k < 1) {
             k = 1
             document.getElementById('k_value').value = 1
@@ -110,10 +110,20 @@
             document.getElementById('k_value').value = 10
             alert('K-Value must be at most 10')
         }
+        if (k % 1 != 0) {
+            k = Math.round(k)
+            document.getElementById('k_value').value = k
+            alert('K must be an integer')
+        }
         if (budget < 1) {
             budget = 1
             document.getElementById('budget').value = 1
             alert('Budget must be at least 1')
+        }
+        if (budget % 1 != 0) {
+            budget = Math.round(budget)
+            document.getElementById('budget').value = budget
+            alert('Budget must be an integer')
         }
 
         // add the election settings to the form data to be sent to the backend

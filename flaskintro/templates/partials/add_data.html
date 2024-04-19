@@ -25,7 +25,33 @@
         <div class="modal-body">
             <form action="{{url_for('add_' + type)}}" method="post">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="id">id/name</label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="id" type="text" placeholder="id"  name="id" required>
+                <input class="mb-4 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="id" type="text" placeholder="id"  name="id" required>
+                {% if type == 'candidate' %}
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="cost">Cost</label>
+                        <div class="w-full flex space-x-2 items-center">
+                            <input 
+                                class="shadow appearance-none border rounded w-4/5 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                id="cost" 
+                                type="number" 
+                                step = "1"
+                                min = "1"
+                                value = "10"
+                                name="cost"
+                                required>
+                            <p 
+                                data-tooltip-target="{{type}}-cost-tooltip" 
+                                class="">
+                                <!--material ui question mark span-->
+                                <span class="material-icons text-zinc-500 scale-75">help</span>
+                            </p>
+                            <div id="{{type}}-cost-tooltip" role="tooltip" class="text-center absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                Used for participatory budget elections. <br>The total cost of this candidate
+                                <div class="tooltip-arrow" data-popper-arrow></div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
                 {% for i in range(data.variables) %}
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="x">{{data.variable_names[i]}}</label>

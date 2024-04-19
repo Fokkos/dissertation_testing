@@ -152,9 +152,14 @@ def getWinner():
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
-    winners = data.findWinner()
+    if data.election_type == 'participatory-budget':
+        print('BUDGET!!')
+        remaining_budget, winners = data.findWinner()
+    else:
+        winners = data.findWinner()
+        remaining_budget = None
 
-    jsonResp = {'winner': winners, 'election_type': data.election_type, 'voting_style': data.voting_style, 'k': data.k, 'distance_measure': data.distance_measure}
+    jsonResp = {'winner': winners, 'election_type': data.election_type, 'voting_style': data.voting_style, 'k': data.k, 'distance_measure': data.distance_measure, 'remaining_budget': remaining_budget}
     return jsonify(jsonResp)
 
 @app.route('/changeElectionSettings', methods=['POST'])
@@ -175,6 +180,24 @@ def changeElectionSettings():
     data.update_results()
 
     return jsonify(data.election_type)
+
+@app.route('/updateCost', methods=['POST'])
+def updateCost():
+    @after_this_request
+    def add_header(response):
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+
+    id = request.form["id"]
+    newCost = int(request.form["cost"])
+    
+    for candidate in data.candidates:
+        # find the candidate with the matching id
+        if candidate['id'] == id:
+            candidate['cost'] = newCost
+            break
+
+    return jsonify(newCost)
 
 if __name__ == "__main__":
     app.run(debug=True)
