@@ -6,7 +6,12 @@
 
 {% block body %}
 <div id="info">Description</div>
-<div id="container" class='overflow-x-hidden'></div>
+<div class='flex'>
+    <div id="container" class='overflow-x-hidden w-4/5'></div>
+    <div class='w-1/5'>
+        <h1>PUT OPTIONS TO EDIT THE VISUALISATION HERE</h1>
+    </div>
+</div>
 
 
 <script type="module">
@@ -45,31 +50,26 @@
 
     const scene = new THREE.Scene();
 
-    //create a blue LineBasicMaterial
+    // for every candidate, the material colour is randomly generated
+    // could set to manual generation to evade overlap?
     const materials = [] 
-
-    for (let i = 0; i < candidates.length + 1; i++) {
+    for (let i = 0; i < candidates.length; i++) {
         // make color random
         materials.push(new THREE.LineBasicMaterial( { color: Math.random() * 0xffffff } ));
     }
 
-    const points = [];
-    /*
-    points.push( new THREE.Vector3( - 10, 0, 0 ) );
-    points.push( new THREE.Vector3( 0, 10, 0 ) );
-    points.push( new THREE.Vector3( 10, 0, 0 ) );
-    points.push( new THREE.Vector3( 20, 10, 0 ) );
-    points.push( new THREE.Vector3( 30, 0, 0 ) );
-    */
-
+    // this function creates a threeJS point given three coordinates
     function createNewPoint(x, y, z) {
         return ( new THREE.Vector3( x, y, z ) );
     }
 
+    // the maximum values for each axis are found to determine the size of the axis
     let max_x = 0
     let max_y = 0
     let max_z = 0
 
+    // for every candidate, generate a line between itself and the average voter
+    // this centers the average voter at the origin
     for (let i = 0; i < candidates.length; i++) {
         let point1 = createNewPoint(candidates[i]['0'] - average_voter['0'],
                        candidates[i]['1'] - average_voter['1'],
@@ -85,25 +85,30 @@
             max_z = Math.abs(point1.z)
         }
 
+        // the point of the average voter is always at the origin
         let point2 = createNewPoint(0,0,0)
+        //sets the line geometry to generate the line with
         let geometry = new THREE.BufferGeometry().setFromPoints( [point1, point2] );
-        //set material color to be random
+        // creates the line with the randomly generated line colour defined earlier
         let line = new THREE.Line( geometry, materials[i] );
         scene.add( line );
     }
 
+    // find the largest axis to determine how frequent the axis line dashes should be
     let largest_axis = Math.max(max_x, max_y, max_z)
 
-    // axis material is white
+    // axis material is white and dashed
     const axisMaterial = new THREE.LineDashedMaterial( {
         color: 0xffffff,
         linewidth: 1,
         scale: 1,
+        // dashSize is the length of the dash, gapSize is the length of the gap
         dashSize: largest_axis / 20,
         gapSize: largest_axis / 20,
     } );
 
     // create xyz axis
+    // computeLineDistances has to be run to make the line dashed
     let x_axis = createNewPoint(max_x,0,0)
     let x_axis_end = createNewPoint(-max_x,0,0)
     let x_geometry = new THREE.BufferGeometry().setFromPoints( [x_axis, x_axis_end] );
@@ -118,24 +123,24 @@
     y_line.computeLineDistances();
     scene.add( y_line );
 
-    //make z line dotted
     let z_axis = createNewPoint(0,0,max_z)
     let z_axis_end = createNewPoint(0,0,-max_z)
     let z_geometry = new THREE.BufferGeometry().setFromPoints( [z_axis, z_axis_end] );
     let z_line = new THREE.Line( z_geometry, axisMaterial );
-    //compute line distances
     z_line.computeLineDistances();
     scene.add( z_line );
     // add text that says 'z-axis' at the end of the z_line and the other lines 
     // face camera w/ https://stackoverflow.com/questions/12919638/textgeometry-to-always-face-user
 
-
+    // need to test more positions for the camera to be in
     camera.position.z = largest_axis * 2.5;
     scene.rotation.x = 0.2;
 
+    // animate is ran every frame to update the scene (in this case the rotation)
     function animate() {
         requestAnimationFrame( animate );
 
+        // rotate the scene itself rather than the camera along the y-axis
         scene.rotation.y += 0.005;
 
         renderer.render( scene, camera );
