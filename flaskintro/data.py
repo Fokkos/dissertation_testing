@@ -131,33 +131,39 @@ class Data:
         if self.voting_style == 'plurality':
             for i in range(min(self.k, len(self.candidates))):
                 winners.append(self.getPluralityVotes()[i])
+            # remove all candidates with 0 votes, votes are at index 1
+            winners = [winner for winner in winners if winner[1] > 0]
         return winners
 
     def findBudget(self):
         # todo implement participatory budgeting
         winners = []
         budget = self.budget
-        if self.voting_style == 'average-voter':
-            for i in range(len(self.candidates)):
-                # get the cost of the candidate in position i of average voter
-                candidate_id = self.average_voter['distances'][i][0]
-                for candidate in self.candidates:
-                    if candidate['id'] == candidate_id:
-                        cost = candidate['cost']
-                        break
 
-                # if the cost is less than the budget, add the candidate to the winners
-                if cost <= budget:
-                    id, metric = self.average_voter['distances'][i]
-                    winners.append((id, metric, cost))
-                    budget -= cost
-                
-        if self.voting_style == 'ranked-choice':
-            for i in range(min(self.k, len(self.candidates))):
-                winners.append(self.getBordaScores()[i])
-        if self.voting_style == 'plurality':
-            for i in range(min(self.k, len(self.candidates))):
-                winners.append(self.getPluralityVotes()[i])
+        if self.voting_style == 'average-voter':
+            candidates = self.average_voter['distances']
+        elif self.voting_style == 'ranked-choice':
+            candidates = self.getBordaScores()
+        elif self.voting_style == 'plurality':
+            candidates = self.getPluralityVotes()
+            # remove all candidates with 0 votes, votes are at index 1
+            candidates = [candidate for candidate in candidates if candidate[1] > 0]
+
+        for i in range(len(candidates)):
+            # get the cost of the candidate ranked i
+            candidate_id = candidates[i][0]
+            for candidate in self.candidates:
+                if candidate['id'] == candidate_id:
+                    cost = candidate['cost']
+                    break
+
+            # if the cost is less than the budget, add the candidate to the winners
+            if cost <= budget:
+                id, metric = candidates[i]
+                winners.append((id, metric, cost))
+                budget -= cost
+
+        # return the remaining budget and the winners
         return budget, winners
 
     # for ranked-choice elections, finds the Borda score of each candidate
@@ -167,7 +173,8 @@ class Data:
             borda_scores[candidate['id']] = 0
         for voter in self.voters:
             for i in range(len(self.candidates)):
-                borda_scores[voter['distances'][i][0]] += len(self.candidates) - i
+                # take away 1 to account for 0 indexing
+                borda_scores[voter['distances'][i][0]] += len(self.candidates) - i - 1
         # sort the scores by highest to lowest
         return sorted(list(borda_scores.items()), key=lambda x: x[1], reverse=True)
 
@@ -178,7 +185,6 @@ class Data:
             votes[candidate['id']] = 0
         for voter in self.voters:
             votes[voter['distances'][0][0]] += 1
-        print(votes)
         # sort the votes by highest to lowest
         return sorted(list(votes.items()), key=lambda x: x[1], reverse=True)
 

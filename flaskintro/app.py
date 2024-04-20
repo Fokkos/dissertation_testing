@@ -153,7 +153,6 @@ def getWinner():
         return response
 
     if data.election_type == 'participatory-budget':
-        print('BUDGET!!')
         remaining_budget, winners = data.findWinner()
     else:
         winners = data.findWinner()
