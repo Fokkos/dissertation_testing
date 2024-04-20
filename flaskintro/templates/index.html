@@ -124,21 +124,36 @@
           createIndividualText(winner, json['winner'][winner], json['voting_style'], json['election_type']);
         }
         if (json['election_type'] == 'participatory-budget') {
-          console.log(json['remaining_budget']);
-          let winnerDiv = document.createElement('div');
-          winnerDiv.className = 'flex justify-center pt-3 px-10 text-sm font-bold';
-          let winnerText = document.createTextNode('Remaining Budget: ' + json['remaining_budget']);
-          winnerDiv.appendChild(winnerText);
-          document.querySelector('.winnersDiv').appendChild(winnerDiv);
+          if (!json['winners']) { // if no winner are found (only vote is above budget)
+            let winnerDiv = document.createElement('div');
+            winnerDiv.className = 'flex justify-center pt-3 px-10 text-3xl font-bold';
+            let winnerText = document.createTextNode('No winners found');
+            winnerDiv.appendChild(winnerText);
+            document.querySelector('.winnersDiv').appendChild(winnerDiv);
 
-          if (json['winner'].length > 10) {
+            let infoDiv = document.createElement('div');
+            infoDiv.className = 'flex justify-center pt-3 px-10 text-xl font-bold';
+            let infoText = document.createTextNode('All votes made were above the allocated budget.');
+            infoDiv.appendChild(infoText);
+            document.querySelector('.winnersDiv').appendChild(infoDiv);
+            
+          } else {
+            console.log(json['remaining_budget']);
             let winnerDiv = document.createElement('div');
             winnerDiv.className = 'flex justify-center pt-3 px-10 text-sm font-bold';
-            let winnerLink = document.createElement('a');
-            winnerLink.href = "/winners";
-            winnerLink.innerText = 'Too many winners to display, click here to see all winners.';
-            winnerDiv.appendChild(winnerLink);
+            let winnerText = document.createTextNode('Remaining Budget: ' + json['remaining_budget']);
+            winnerDiv.appendChild(winnerText);
             document.querySelector('.winnersDiv').appendChild(winnerDiv);
+
+            if (json['winner'].length > 10) {
+              let winnerDiv = document.createElement('div');
+              winnerDiv.className = 'flex justify-center pt-3 px-10 text-sm font-bold';
+              let winnerLink = document.createElement('a');
+              winnerLink.href = "/winners";
+              winnerLink.innerText = 'Too many winners to display, click here to see all winners.';
+              winnerDiv.appendChild(winnerLink);
+              document.querySelector('.winnersDiv').appendChild(winnerDiv);
+            }
           }
         }
       }
