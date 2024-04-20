@@ -1,14 +1,147 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>My first three.js app</title>
-		<style>
-			body { margin: 0; }
-		</style>
-	</head>
-	<body>
-		<script type="module" src="/static/js/threejs.js"></script>
-	</body>
-</html>
+{% extends 'base.html' %}
 
+{% block head %}
+    <title>Flask demo</title>
+{% endblock %}
+
+{% block body %}
+<div id="info">Description</div>
+<div id="container" class='overflow-x-hidden'></div>
+
+
+<script type="module">
+    // get average voter
+    let average_voter = {
+        "id": 'average_voter',
+        '0': {{data.average_voter[0]}},
+        '1': {{data.average_voter[1]}},
+        '2': {{data.average_voter[2]}},
+    }
+    
+    // get 10 candidates
+    let candidates = []
+    let candidate = {}
+    {% for candidate in data.candidates[:10] %}
+        candidate = {
+            "id": '{{candidate.id}}',
+            '0': {{candidate[0]}},
+            '1': {{candidate[1]}},
+            '2': {{candidate[2]}},
+        }
+        candidates.push(candidate)
+    {% endfor %}
+
+    import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
+
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    //append the renderer to the container
+    document.getElementById('container').appendChild( renderer.domElement );
+    
+
+    const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 500 );
+    camera.position.set( 0, 0, 100 );
+    camera.lookAt( 0, 0, 0 );
+
+    const scene = new THREE.Scene();
+
+    //create a blue LineBasicMaterial
+    const materials = [] 
+
+    for (let i = 0; i < candidates.length + 1; i++) {
+        // make color random
+        materials.push(new THREE.LineBasicMaterial( { color: Math.random() * 0xffffff } ));
+    }
+
+    const points = [];
+    /*
+    points.push( new THREE.Vector3( - 10, 0, 0 ) );
+    points.push( new THREE.Vector3( 0, 10, 0 ) );
+    points.push( new THREE.Vector3( 10, 0, 0 ) );
+    points.push( new THREE.Vector3( 20, 10, 0 ) );
+    points.push( new THREE.Vector3( 30, 0, 0 ) );
+    */
+
+    function createNewPoint(x, y, z) {
+        return ( new THREE.Vector3( x, y, z ) );
+    }
+
+    let max_x = 0
+    let max_y = 0
+    let max_z = 0
+
+    for (let i = 0; i < candidates.length; i++) {
+        let point1 = createNewPoint(candidates[i]['0'] - average_voter['0'],
+                       candidates[i]['1'] - average_voter['1'],
+                       candidates[i]['2'] - average_voter['2'])
+
+        if (Math.abs(point1.x) > max_x) {
+            max_x = Math.abs(point1.x)
+        }
+        if (Math.abs(point1.y) > max_y) {
+            max_y = Math.abs(point1.y)
+        }
+        if (Math.abs(point1.z) > max_z) {
+            max_z = Math.abs(point1.z)
+        }
+
+        let point2 = createNewPoint(0,0,0)
+        let geometry = new THREE.BufferGeometry().setFromPoints( [point1, point2] );
+        //set material color to be random
+        let line = new THREE.Line( geometry, materials[i] );
+        scene.add( line );
+    }
+
+    let largest_axis = Math.max(max_x, max_y, max_z)
+
+    // axis material is white
+    const axisMaterial = new THREE.LineDashedMaterial( {
+        color: 0xffffff,
+        linewidth: 1,
+        scale: 1,
+        dashSize: largest_axis / 20,
+        gapSize: largest_axis / 20,
+    } );
+
+    // create xyz axis
+    let x_axis = createNewPoint(max_x,0,0)
+    let x_axis_end = createNewPoint(-max_x,0,0)
+    let x_geometry = new THREE.BufferGeometry().setFromPoints( [x_axis, x_axis_end] );
+    let x_line = new THREE.Line( x_geometry, axisMaterial );
+    x_line.computeLineDistances();
+    scene.add( x_line );
+
+    let y_axis = createNewPoint(0,max_y,0)
+    let y_axis_end = createNewPoint(0,-max_y,0)
+    let y_geometry = new THREE.BufferGeometry().setFromPoints( [y_axis, y_axis_end] );
+    let y_line = new THREE.Line( y_geometry, axisMaterial );
+    y_line.computeLineDistances();
+    scene.add( y_line );
+
+    //make z line dotted
+    let z_axis = createNewPoint(0,0,max_z)
+    let z_axis_end = createNewPoint(0,0,-max_z)
+    let z_geometry = new THREE.BufferGeometry().setFromPoints( [z_axis, z_axis_end] );
+    let z_line = new THREE.Line( z_geometry, axisMaterial );
+    //compute line distances
+    z_line.computeLineDistances();
+    scene.add( z_line );
+    // add text that says 'z-axis' at the end of the z_line and the other lines 
+    // face camera w/ https://stackoverflow.com/questions/12919638/textgeometry-to-always-face-user
+
+
+    camera.position.z = largest_axis * 2.5;
+    scene.rotation.x = 0.2;
+
+    function animate() {
+        requestAnimationFrame( animate );
+
+        scene.rotation.y += 0.005;
+
+        renderer.render( scene, camera );
+    }
+
+    animate();
+</script>
+
+{% endblock %}
