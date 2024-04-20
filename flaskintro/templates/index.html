@@ -6,8 +6,6 @@
 
 {% block body %}
 
-
-
 {% if error %}
   <p class=error><strong>Error:</strong> {{ error }}
 {% endif %}
@@ -61,6 +59,8 @@
 
 <script src='/static/js/winnerDiv.js'></script>
 <script>
+  // the functions have to be inline as they use Jinja2 variables
+
   // on load, show the election settings
   function setElectionSettingsText() {
     electionText = 

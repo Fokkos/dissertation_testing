@@ -145,6 +145,13 @@ def visualisations():
     return render_template('visualisations.html', data=data, 
         default_candidates=default_candidates, type='visualisations')
 
+# Three.JS testing
+@app.get('/threejs')
+def threejs():
+    global data
+    return render_template('threejs.html', data=data, type='threejs')
+
+# API routes
 @app.route('/getWinner', methods=['GET'])
 def getWinner():
     @after_this_request

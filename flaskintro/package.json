@@ -1,6 +1,7 @@
 {
   "devDependencies": {
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.4.1",
+    "vite": "^5.2.10"
   },
   "scripts": {
     "build": "tailwindcss -i ./static/css/input.css -o ./static/css/main.css --watch",
@@ -10,6 +11,7 @@
     "chart.js": "^4.4.2",
     "chartjs-chart-pcp": "^4.3.0",
     "flowbite": "^2.3.0",
-    "material-symbols": "^0.16.0"
+    "material-symbols": "^0.16.0",
+    "three": "^0.163.0"
   }
 }
