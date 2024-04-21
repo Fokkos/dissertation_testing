@@ -137,6 +137,7 @@ def visualisations():
     # get default candidates (top 10 for average voter)
     default_candidates = []
     if len(data.candidates) > 1:
+        print(data.average_voter)
         for id, score in data.average_voter['distances'][:10]:
             for candidate in data.candidates:
                 if candidate['id'] == id:

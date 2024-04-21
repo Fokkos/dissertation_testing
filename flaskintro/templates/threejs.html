@@ -15,6 +15,10 @@
 
 
 <script type="module">
+    import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
+    import { FontLoader } from '/static/js/FontLoader.js';
+    import { TextGeometry } from '/static/js/TextGeometry.js';
+
     // get average voter
     let average_voter = {
         "id": 'average_voter',
@@ -36,10 +40,10 @@
         candidates.push(candidate)
     {% endfor %}
 
-    import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
-
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize( window.innerWidth, window.innerHeight );
+    const renderer = new THREE.WebGLRenderer( {antialias: true} );
+    renderer.setSize( window.innerWidth * 4 / 5, window.innerHeight );
+    renderer.setPixelRatio( window.devicePixelRatio );
+    renderer.outputEncoding = THREE.sRGBEncoding;
     //append the renderer to the container
     document.getElementById('container').appendChild( renderer.domElement );
     
@@ -132,8 +136,78 @@
     // add text that says 'z-axis' at the end of the z_line and the other lines 
     // face camera w/ https://stackoverflow.com/questions/12919638/textgeometry-to-always-face-user
 
+    // font loading
+    // would have used a function to load the font but the three.js mesh object has to be created in the loader
+
+    const loader = new FontLoader();
+    
+    let xText = 'X-axis';
+    let xTextMesh; // text object
+    loader.load('/static/fonts/Roboto_Regular.json', function (font) {
+        const tGeometry = new TextGeometry(xText, {
+            font: font,
+            size: 0.2,
+            height: 0.1,
+            curveSegments: 12,
+            bevelEnabled: false,
+        });
+        tGeometry.center();
+
+        xTextMesh = new THREE.Mesh(tGeometry, [
+            new THREE.MeshPhongMaterial({ emissive: 0xff0000, emissiveIntensity: 0.5}),
+            new THREE.MeshPhongMaterial({ color: 0xff0000 }),
+        ]);
+        
+        scene.add(xTextMesh);
+        xTextMesh.position.set(max_x - 0.5, 0, 0);
+    });
+
+    let yText = 'Y-axis';
+    let yTextMesh; // text object
+    loader.load('/static/fonts/Roboto_Regular.json', function (font) {
+        const tGeometry = new TextGeometry(yText, {
+            font: font,
+            size: 0.2,
+            height: 0.1,
+            curveSegments: 12,
+            bevelEnabled: false,
+        });
+        tGeometry.center();
+
+        yTextMesh = new THREE.Mesh(tGeometry, [
+            new THREE.MeshPhongMaterial({ emissive: 0xff0000, emissiveIntensity: 0.5}),
+            new THREE.MeshPhongMaterial({ color: 0xff0000 }),
+        ]);
+        
+        scene.add(yTextMesh);
+        yTextMesh.position.set(0, max_y - 0.5, 0);
+    });
+
+    let zText = 'Z-axis';
+    let zTextMesh; // text object
+    loader.load('/static/fonts/Roboto_Regular.json', function (font) {
+        const tGeometry = new TextGeometry(zText, {
+            font: font,
+            size: 0.2,
+            height: 0.1,
+            curveSegments: 12,
+            bevelEnabled: false,
+        });
+        tGeometry.center();
+
+        zTextMesh = new THREE.Mesh(tGeometry, [
+            new THREE.MeshPhongMaterial({ emissive: 0xff0000, emissiveIntensity: 0.5}),
+            new THREE.MeshPhongMaterial({ color: 0xff0000 }),
+        ]);
+        
+        scene.add(zTextMesh);
+        zTextMesh.position.set(0, 0, max_z - 0.5);
+    });
+
+
     // need to test more positions for the camera to be in
     camera.position.z = largest_axis * 2.5;
+    // have the camera rotation be facing down
     scene.rotation.x = 0.2;
 
     // animate is ran every frame to update the scene (in this case the rotation)
@@ -142,11 +216,22 @@
 
         // rotate the scene itself rather than the camera along the y-axis
         scene.rotation.y += 0.005;
+        xTextMesh.lookAt(camera.position);
+        yTextMesh.lookAt(camera.position);
+        zTextMesh.lookAt(camera.position);
 
         renderer.render( scene, camera );
     }
 
     animate();
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+    }
+
+    window.addEventListener( 'resize', onWindowResize );
 </script>
 
 {% endblock %}

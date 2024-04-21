@@ -30,6 +30,7 @@ def process_csv(file, data):
 
     # create new average voter
     data.average_voter = data.create_average_voter()
+    data.average_voter = data.update_average_voter()
     
     return df
 
