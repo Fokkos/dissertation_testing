@@ -5,13 +5,91 @@
 {% endblock %}
 
 {% block body %}
-<div id="info">Description</div>
 <div class='flex'>
     <div id="container" class='overflow-x-hidden w-4/5'></div>
     <div class='w-1/5'>
-        <h1>PUT OPTIONS TO EDIT THE VISUALISATION HERE</h1>
+        <div class='font-bold text-2xl flex justify-center'>
+            <h1>Settings</h1>
+        </div>
+        <!--here have a dropdown for the different axis settings-->
+        <div class='flex justify-center'>
+            <button 
+                id="threeModalTrigger" 
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                onclick="openModal('threeModal')">
+                Edit 3D Graph
+            </button>
+        </div>
+        <div class='font-bold text-2xl flex justify-center'>
+            <h1>Key</h1>
+        </div>
+        <div class='flex justify-center'>
+            <div class='flex flex-col'>
+                {% for i in range(19) %}
+                    <div class='flex items-center space-x-2'>
+                        <div class='w-4 h-4' style='background-color: {{colours[i]}}'></div>
+                        <p>{{data.candidates[i]['id']}}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- options modal -->
+<div id="threeModal" class="modal hidden fixed inset-0 bg-transparent flex justify-center items-center w-screen">
+    <div id="threeModalOverlay" class="modal-overlay bg-gray-500 bg-opacity-75 fixed inset-0 z-40"></div>
+    <div class="modal-content bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 z-50">
+        <!-- Form -->
+        <div class="mb-4 flex items-center justify-between">
+            <h5 class="modal-title text-xl font-semibold">Create a graph</h5>
+            <button
+                class="close-modal flex justify-center rounded border border-gray-300 bg-[--background] hover:bg-red-400"
+                id="threeModalCloseBtn"
+                aria-label="Close modal"
+                title="Close modal"
+                onclick="closeModal('threeModal')"
+                ><span class="material-icons">close</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form action="/threejs" method="POST">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="xAxis">X-Axis:</label>
+                    <select name="xAxis" id="xAxis" class="w-full p-2 border border-gray-300 rounded">
+                        {% for i in range(data.variables) %}
+                            <option value="{{ i }}" {% if chosen_variables[0] == i %} selected {% endif %}>{{ data.variable_names[i] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="yAxis">Y-Axis:</label>
+                    <select name="yAxis" id="yAxis" class="w-full p-2 border border-gray-300 rounded">
+                        {% for i in range(data.variables) %}
+                            <option value="{{ i }}" {% if chosen_variables[1] == i %} selected {% endif %}>{{ data.variable_names[i] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="zAxis">Z-Axis:</label>
+                    <select name="zAxis" id="zAxis" class="w-full p-2 border border-gray-300 rounded">
+                        {% for i in range(data.variables) %}
+                            <option value="{{ i }}" {% if chosen_variables[2] == i %} selected {% endif %}>{{ data.variable_names[i] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="flex items-center justify-between">
+                    <button
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        type="submit"
+                        >Submit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 
 
 <script type="module">
@@ -22,20 +100,20 @@
     // get average voter
     let average_voter = {
         "id": 'average_voter',
-        '0': {{data.average_voter[0]}},
-        '1': {{data.average_voter[1]}},
-        '2': {{data.average_voter[2]}},
+        'x': {{data.average_voter[chosen_variables[0]]}},
+        'y': {{data.average_voter[chosen_variables[1]]}},
+        'z': {{data.average_voter[chosen_variables[2]]}},
     }
     
     // get 10 candidates
     let candidates = []
     let candidate = {}
-    {% for candidate in data.candidates[:10] %}
+    {% for candidate in data.candidates[:20] %}
         candidate = {
             "id": '{{candidate.id}}',
-            '0': {{candidate[0]}},
-            '1': {{candidate[1]}},
-            '2': {{candidate[2]}},
+            'x': {{candidate[chosen_variables[0]]}},
+            'y': {{candidate[chosen_variables[1]]}},
+            'z': {{candidate[chosen_variables[2]]}},
         }
         candidates.push(candidate)
     {% endfor %}
@@ -57,10 +135,10 @@
     // for every candidate, the material colour is randomly generated
     // could set to manual generation to evade overlap?
     const materials = [] 
-    for (let i = 0; i < candidates.length; i++) {
+    {% for i in range(20) %}
         // make color random
-        materials.push(new THREE.LineBasicMaterial( { color: Math.random() * 0xffffff } ));
-    }
+        materials.push(new THREE.LineBasicMaterial( { color: '{{colours[i]}}' } ));
+    {% endfor %}
 
     // this function creates a threeJS point given three coordinates
     function createNewPoint(x, y, z) {
@@ -75,9 +153,9 @@
     // for every candidate, generate a line between itself and the average voter
     // this centers the average voter at the origin
     for (let i = 0; i < candidates.length; i++) {
-        let point1 = createNewPoint(candidates[i]['0'] - average_voter['0'],
-                       candidates[i]['1'] - average_voter['1'],
-                       candidates[i]['2'] - average_voter['2'])
+        let point1 = createNewPoint(candidates[i]['x'] - average_voter['x'],
+                       candidates[i]['y'] - average_voter['y'],
+                       candidates[i]['z'] - average_voter['z'])
 
         if (Math.abs(point1.x) > max_x) {
             max_x = Math.abs(point1.x)
@@ -138,16 +216,16 @@
 
     // font loading
     // would have used a function to load the font but the three.js mesh object has to be created in the loader
-
+    // font to json: https://gero3.github.io/facetype.js/
     const loader = new FontLoader();
     
-    let xText = 'X-axis';
+    let xText = '{{data.variable_names[chosen_variables[0]]}}';
     let xTextMesh; // text object
     loader.load('/static/fonts/Roboto_Regular.json', function (font) {
         const tGeometry = new TextGeometry(xText, {
             font: font,
-            size: 0.2,
-            height: 0.1,
+            size: 0.1,          // actually the height of the font, in user-space
+            depth: 0.3,         // THICKNESS of the extruded font, in user-space
             curveSegments: 12,
             bevelEnabled: false,
         });
@@ -162,13 +240,13 @@
         xTextMesh.position.set(max_x - 0.5, 0, 0);
     });
 
-    let yText = 'Y-axis';
+    let yText = '{{data.variable_names[chosen_variables[1]]}}';
     let yTextMesh; // text object
     loader.load('/static/fonts/Roboto_Regular.json', function (font) {
         const tGeometry = new TextGeometry(yText, {
             font: font,
-            size: 0.2,
-            height: 0.1,
+            size: 0.1,          // actually the height of the font, in user-space
+            depth: 0.3,         // THICKNESS of the extruded font, in user-space
             curveSegments: 12,
             bevelEnabled: false,
         });
@@ -183,13 +261,13 @@
         yTextMesh.position.set(0, max_y - 0.5, 0);
     });
 
-    let zText = 'Z-axis';
+    let zText = '{{data.variable_names[chosen_variables[2]]}}';
     let zTextMesh; // text object
     loader.load('/static/fonts/Roboto_Regular.json', function (font) {
         const tGeometry = new TextGeometry(zText, {
             font: font,
-            size: 0.2,
-            height: 0.1,
+            size: 0.1,          // actually the height of the font, in user-space
+            depth: 0.3,         // THICKNESS of the extruded font, in user-space
             curveSegments: 12,
             bevelEnabled: false,
         });
