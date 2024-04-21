@@ -25,10 +25,10 @@
         </div>
         <div class='flex justify-center'>
             <div class='flex flex-col'>
-                {% for i in range(19) %}
+                {% for i in range(candidates|length) %}
                     <div class='flex items-center space-x-2'>
                         <div class='w-4 h-4' style='background-color: {{colours[i]}}'></div>
-                        <p>{{data.candidates[i]['id']}}</p>
+                        <p>{{candidates[i]['id']}}</p>
                     </div>
                 {% endfor %}
             </div>
@@ -42,7 +42,7 @@
     <div class="modal-content bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 z-50">
         <!-- Form -->
         <div class="mb-4 flex items-center justify-between">
-            <h5 class="modal-title text-xl font-semibold">Create a graph</h5>
+            <h5 class="modal-title text-xl font-semibold">Edit Three.js 3D Visualisation</h5>
             <button
                 class="close-modal flex justify-center rounded border border-gray-300 bg-[--background] hover:bg-red-400"
                 id="threeModalCloseBtn"
@@ -54,31 +54,61 @@
         </div>
         <div class="modal-body">
             <form action="/threejs" method="POST">
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="xAxis">X-Axis:</label>
-                    <select name="xAxis" id="xAxis" class="w-full p-2 border border-gray-300 rounded">
-                        {% for i in range(data.variables) %}
-                            <option value="{{ i }}" {% if chosen_variables[0] == i %} selected {% endif %}>{{ data.variable_names[i] }}</option>
-                        {% endfor %}
-                    </select>
+                <div class='flex'>
+                    <div id='left_column w-1/2'>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="xAxis">X-Axis:</label>
+                            <select name="xAxis" id="xAxis" class="w-full p-2 border border-gray-300 rounded">
+                                {% for i in range(data.variables) %}
+                                    <option value="{{ i }}" {% if chosen_variables[0] == i %} selected {% endif %}>{{ data.variable_names[i] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="yAxis">Y-Axis:</label>
+                            <select name="yAxis" id="yAxis" class="w-full p-2 border border-gray-300 rounded">
+                                {% for i in range(data.variables) %}
+                                    <option value="{{ i }}" {% if chosen_variables[1] == i %} selected {% endif %}>{{ data.variable_names[i] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="zAxis">Z-Axis:</label>
+                            <select name="zAxis" id="zAxis" class="w-full p-2 border border-gray-300 rounded">
+                                {% for i in range(data.variables) %}
+                                    <option value="{{ i }}" {% if chosen_variables[2] == i %} selected {% endif %}>{{ data.variable_names[i] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div id='right_column' class='px-4'>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="candidates">Candidates:</label>
+                        </div>
+                        <div class="max-h-56 overflow-y-scroll overscroll-x-contain">
+                            {% for candidate in data.candidates %}
+                                {% set i = loop.index0 %}
+                                <div class="flex justify-items-start">
+                                    <input 
+                                        class="m-2" 
+                                        type="checkbox" 
+                                        id="candidate_{{ i }}" 
+                                        name="{{ i }}" 
+                                        value="chosen"
+                                        onclick=""
+                                        {% for chosen_candidate in candidates %}
+                                            {% if chosen_candidate['id'] == candidate['id'] %}
+                                                checked
+                                            {% endif %}
+                                        {% endfor %}
+                                        >
+                                    <label for="{{ candidate['id'] }}">{{ candidate['id'] }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="yAxis">Y-Axis:</label>
-                    <select name="yAxis" id="yAxis" class="w-full p-2 border border-gray-300 rounded">
-                        {% for i in range(data.variables) %}
-                            <option value="{{ i }}" {% if chosen_variables[1] == i %} selected {% endif %}>{{ data.variable_names[i] }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="zAxis">Z-Axis:</label>
-                    <select name="zAxis" id="zAxis" class="w-full p-2 border border-gray-300 rounded">
-                        {% for i in range(data.variables) %}
-                            <option value="{{ i }}" {% if chosen_variables[2] == i %} selected {% endif %}>{{ data.variable_names[i] }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-center">
                     <button
                         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                         type="submit"
@@ -108,7 +138,7 @@
     // get 10 candidates
     let candidates = []
     let candidate = {}
-    {% for candidate in data.candidates[:20] %}
+    {% for candidate in candidates %} // candidates is passed from the backend
         candidate = {
             "id": '{{candidate.id}}',
             'x': {{candidate[chosen_variables[0]]}},
@@ -237,7 +267,7 @@
         ]);
         
         scene.add(xTextMesh);
-        xTextMesh.position.set(max_x - 0.5, 0, 0);
+        xTextMesh.position.set(max_x, 0, 0);
     });
 
     let yText = '{{data.variable_names[chosen_variables[1]]}}';
@@ -279,7 +309,7 @@
         ]);
         
         scene.add(zTextMesh);
-        zTextMesh.position.set(0, 0, max_z - 0.5);
+        zTextMesh.position.set(0, 0, max_z);
     });
 
 

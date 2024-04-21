@@ -152,9 +152,17 @@ def threejs():
     global data
     # TODO make default variables the ones with the most variance
     chosen_variables = [0,1,2]
+    # get the top 20 candidates for the average voter
+    default_candidates = []
+    if len(data.candidates) > 1:
+        for id, score in data.average_voter['distances'][:10]:
+            for candidate in data.candidates:
+                if candidate['id'] == id:
+                    default_candidates.append(candidate)
+                    break
     # colours source: https://sashamaps.net/docs/resources/20-colors/
     colours = ['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4', '#469990', '#dcbeff', '#9A6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#a9a9a9', '#ffffff', '#000000']
-    return render_template('threejs.html', data=data, type='threejs', colours=colours, chosen_variables=chosen_variables)
+    return render_template('threejs.html', data=data, type='threejs', colours=colours, chosen_variables=chosen_variables, candidates=default_candidates)
 
 # post for threejs
 @app.post('/threejs')
@@ -162,9 +170,16 @@ def threejs_post():
     global data
     form = request.form
     chosen_variables = [int(form['xAxis']), int(form['yAxis']), int(form['zAxis'])]
+
+    # get the chosen candidates from the form data
+    selected_candidates = []
+    for i in range(len(data.candidates)):
+        if str(i) in form.keys():
+            selected_candidates.append(data.candidates[i])
+
     # colours source: https://sashamaps.net/docs/resources/20-colors/
     colours = ['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4', '#469990', '#dcbeff', '#9A6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#a9a9a9', '#ffffff', '#000000']
-    return render_template('threejs.html', data=data, type='threejs', colours=colours, chosen_variables=chosen_variables)
+    return render_template('threejs.html', data=data, type='threejs', colours=colours, chosen_variables=chosen_variables, candidates=selected_candidates)
 
 # API routes
 @app.route('/getWinner', methods=['GET'])

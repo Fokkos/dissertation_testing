@@ -35,7 +35,8 @@ function getWinner() {
                 createIndividualText(winner, json['winner'][winner], json['voting_style'], json['election_type']);
             }
             if (json['election_type'] == 'participatory-budget') {
-                if (!json['winners']) { // if no winner are found (only vote is above budget)
+                if (json['winner'].length < 1) { // if no winner are found (only vote is above budget)
+                    
                     let winnerDiv = document.createElement('div');
                     winnerDiv.className = 'flex justify-center pt-3 px-10 text-3xl font-bold';
                     let winnerText = document.createTextNode('No winners found');
