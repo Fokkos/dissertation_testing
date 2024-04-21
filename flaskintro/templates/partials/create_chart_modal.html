@@ -198,7 +198,12 @@
                 new_candidate{{ id }}.label = "{{ candidate['id'] }}";
                 new_candidate{{ id }}.fill = false; // removes bg from radar chart
                 new_candidate{{ id }}.data = [];
-                new_candidate{{ id }}.borderWidth = 1;
+                console.log('{{ data.average_voter}}')
+                {% if candidate['id'] == data.average_voter['distances'][0][0] %} 
+                    new_candidate{{ id }}.borderWidth = 5;
+                {% else %}  
+                    new_candidate{{ id }}.borderWidth = 1;
+                {% endif %}
 
                 {% for var in range(data.variables) %}
                     if (selectedVariables.includes({{ var }})) {
@@ -239,7 +244,7 @@
         average_voter.label = "Average Voter";
         average_voter.fill = false; // removes bg from radar chart
         average_voter.data = [];
-        average_voter.borderWidth = 1;
+        average_voter.borderWidth = 5;
 
         {% for var in range(data.variables) %}
             if (selectedVariables.includes({{ var }})) {

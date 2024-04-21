@@ -1,12 +1,17 @@
 <div>
   <!-- Modal Trigger Button -->
   <!-- Button and modal have to be seperated so that the modal is drawn on top of the canvas -->
-  <div class='flex justify-center'>
+  <div class='flex justify-center space-x-4'>
     <button 
       id="graphModalTrigger" 
       class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
       onclick="openModal('graphModal')">
       Edit PCP & Radar Charts
+    </button>
+    <button 
+      id="threeJSButton" 
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+      <a href='/threejs'>View 3D Visualisation</a>
     </button>
   </div>
 
@@ -249,7 +254,11 @@
 
         new_candidate{{ id }}.fill = false; // removes bg from radar chart
         new_candidate{{ id }}.data = [];
-        new_candidate{{ id }}.borderWidth = 1;
+        {% if candidate['id'] == data.average_voter['distances'][0][0] %} 
+            new_candidate{{ id }}.borderWidth = 5;
+        {% else %}  
+            new_candidate{{ id }}.borderWidth = 1;
+        {% endif %}
 
         {% for var in range(data.variables) %}
             if (selectedVariables.includes({{ var }})) {
