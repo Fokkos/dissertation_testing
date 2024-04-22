@@ -1,3 +1,5 @@
+import numpy as np
+
 # For a single voter, calc distance for each candidate, return the candidate with the smallest distance
 def choose_candidate(data, voter):
     distances = []
@@ -22,4 +24,13 @@ def manhattan_distance(voter, candidate, variables):
     for i in range(variables):
         distance += abs(float(voter[i]) - float(candidate[i]))
     return distance
+
+def find_variances(data):
+    # find the variance of each variable
+    variances = []
+    for i in range(data.variables):
+        variances.append((i, np.var([float(candidate[i]) for candidate in data.candidates])))
+    # sort the variances by largest to smallest
+    variances = sorted(variances, key=lambda x: x[1], reverse=True)
+    return variances
 

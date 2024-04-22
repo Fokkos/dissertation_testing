@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, request, redirect, jsonify, after_this_request
 from csv_handler import process_csv
 from data import Data
+from calculations import find_variances
 
 app = Flask(__name__)
 data = Data()
@@ -137,7 +138,6 @@ def visualisations():
     # get default candidates (top 10 for average voter)
     default_candidates = []
     if len(data.candidates) > 1:
-        print(data.average_voter)
         for id, score in data.average_voter['distances'][:10]:
             for candidate in data.candidates:
                 if candidate['id'] == id:
@@ -150,8 +150,12 @@ def visualisations():
 @app.get('/threejs')
 def threejs():
     global data
-    # TODO make default variables the ones with the most variance
-    chosen_variables = [0,1,2]
+
+    # Have the chosen variables be the top 3 with the highest variance
+    chosen_variables = []
+    for i, variance in find_variances(data)[:3]:
+        chosen_variables.append(i)
+
     # get the top 20 candidates for the average voter
     default_candidates = []
     if len(data.candidates) > 1:
