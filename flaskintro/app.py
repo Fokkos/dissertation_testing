@@ -160,9 +160,11 @@ def threejs():
                 if candidate['id'] == id:
                     default_candidates.append(candidate)
                     break
+    
+    line_type = data.distance_measure
     # colours source: https://sashamaps.net/docs/resources/20-colors/
     colours = ['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4', '#469990', '#dcbeff', '#9A6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#a9a9a9', '#ffffff', '#000000']
-    return render_template('threejs.html', data=data, type='threejs', colours=colours, chosen_variables=chosen_variables, candidates=default_candidates)
+    return render_template('threejs.html', data=data, type='threejs', colours=colours, chosen_variables=chosen_variables, candidates=default_candidates, line_type=line_type)
 
 # post for threejs
 @app.post('/threejs')
@@ -177,9 +179,11 @@ def threejs_post():
         if str(i) in form.keys():
             selected_candidates.append(data.candidates[i])
 
+    line_type = form['distance_measure']
+
     # colours source: https://sashamaps.net/docs/resources/20-colors/
     colours = ['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4', '#469990', '#dcbeff', '#9A6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#a9a9a9', '#ffffff', '#000000']
-    return render_template('threejs.html', data=data, type='threejs', colours=colours, chosen_variables=chosen_variables, candidates=selected_candidates)
+    return render_template('threejs.html', data=data, type='threejs', colours=colours, chosen_variables=chosen_variables, candidates=selected_candidates, line_type=line_type)
 
 # API routes
 @app.route('/getWinner', methods=['GET'])

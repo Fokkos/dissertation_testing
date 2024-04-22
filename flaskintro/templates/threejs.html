@@ -64,6 +64,13 @@
                 <div class='flex'>
                     <div id='left_column w-1/2'>
                         <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="zAxis">Distance Measure:</label>
+                            <select name="distance_measure" id="distance_measure" class="w-full p-2 border border-gray-300 rounded">
+                                <option value="euclidean" {% if line_type == 'euclidean' %} selected {% endif %}>Euclidean</option>
+                                <option value="manhattan" {% if line_type == 'manhattan' %} selected {% endif %}>Manhattan</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="xAxis">X-Axis:</label>
                             <select name="xAxis" id="xAxis" class="w-full p-2 border border-gray-300 rounded">
                                 {% for i in range(data.variables) %}
@@ -91,27 +98,27 @@
                     <div id='right_column' class='px-4'>
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="candidates">Candidates:</label>
-                        </div>
-                        <div class="max-h-56 overflow-y-scroll overscroll-x-contain">
-                            {% for candidate in data.candidates %}
-                                {% set i = loop.index0 %}
-                                <div class="flex justify-items-start">
-                                    <input 
-                                        class="m-2" 
-                                        type="checkbox" 
-                                        id="candidate_{{ i }}" 
-                                        name="{{ i }}" 
-                                        value="chosen"
-                                        onclick=""
-                                        {% for chosen_candidate in candidates %}
-                                            {% if chosen_candidate['id'] == candidate['id'] %}
-                                                checked
-                                            {% endif %}
-                                        {% endfor %}
-                                        >
-                                    <label for="{{ candidate['id'] }}">{{ candidate['id'] }}</label>
-                                </div>
-                            {% endfor %}
+                            <div class="max-h-72 overflow-y-scroll overscroll-x-contain">
+                                {% for candidate in data.candidates %}
+                                    {% set i = loop.index0 %}
+                                    <div class="flex justify-items-start">
+                                        <input 
+                                            class="m-2" 
+                                            type="checkbox" 
+                                            id="candidate_{{ i }}" 
+                                            name="{{ i }}" 
+                                            value="chosen"
+                                            onclick=""
+                                            {% for chosen_candidate in candidates %}
+                                                {% if chosen_candidate['id'] == candidate['id'] %}
+                                                    checked
+                                                {% endif %}
+                                            {% endfor %}
+                                            >
+                                        <label for="{{ candidate['id'] }}">{{ candidate['id'] }}</label>
+                                    </div>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -190,24 +197,49 @@
     // for every candidate, generate a line between itself and the average voter
     // this centers the average voter at the origin
     for (let i = 0; i < candidates.length; i++) {
-        let point1 = createNewPoint(candidates[i]['x'] - average_voter['x'],
-                       candidates[i]['y'] - average_voter['y'],
-                       candidates[i]['z'] - average_voter['z'])
+        {% if line_type == 'euclidean' %}
+            let point1 = createNewPoint(candidates[i]['x'] - average_voter['x'],
+                        candidates[i]['y'] - average_voter['y'],
+                        candidates[i]['z'] - average_voter['z'])
 
-        if (Math.abs(point1.x) > max_x) {
-            max_x = Math.abs(point1.x)
-        }
-        if (Math.abs(point1.y) > max_y) {
-            max_y = Math.abs(point1.y)
-        }
-        if (Math.abs(point1.z) > max_z) {
-            max_z = Math.abs(point1.z)
-        }
+            if (Math.abs(point1.x) > max_x) {
+                max_x = Math.abs(point1.x)
+            }
+            if (Math.abs(point1.y) > max_y) {
+                max_y = Math.abs(point1.y)
+            }
+            if (Math.abs(point1.z) > max_z) {
+                max_z = Math.abs(point1.z)
+            }
 
-        // the point of the average voter is always at the origin
-        let point2 = createNewPoint(0,0,0)
-        //sets the line geometry to generate the line with
-        let geometry = new THREE.BufferGeometry().setFromPoints( [point1, point2] );
+            // the point of the average voter is always at the origin
+            let point2 = createNewPoint(0,0,0)
+            //sets the line geometry to generate the line with
+            let geometry = new THREE.BufferGeometry().setFromPoints( [point1, point2] );
+        {% elif line_type == 'manhattan' %}
+            let point1 = createNewPoint(0,0,0)
+            let point2 = createNewPoint(candidates[i]['x'] - average_voter['x'], 
+                        0, 
+                        0)
+            let point3 = createNewPoint(candidates[i]['x'] - average_voter['x'], 
+                        candidates[i]['y'] - average_voter['y'], 
+                        0)
+            let point4 = createNewPoint(candidates[i]['x'] - average_voter['x'],
+                        candidates[i]['y'] - average_voter['y'],
+                        candidates[i]['z'] - average_voter['z'])
+
+            if (Math.abs(point4.x) > max_x) {
+                max_x = Math.abs(point4.x)
+            }
+            if (Math.abs(point4.y) > max_y) {
+                max_y = Math.abs(point4.y)
+            }
+            if (Math.abs(point4.z) > max_z) {
+                max_z = Math.abs(point4.z)
+            }
+
+            let geometry = new THREE.BufferGeometry().setFromPoints( [point1, point2, point3, point4] );
+        {% endif %}
         // creates the line with the randomly generated line colour defined earlier
         let line = new THREE.Line( geometry, materials[i] );
         scene.add( line );
