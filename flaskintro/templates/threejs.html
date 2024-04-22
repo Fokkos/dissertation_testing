@@ -69,7 +69,7 @@
             </button>
         </div>
         <div class="modal-body">
-            <form action="/threejs" method="POST">
+            <form action="/threejs" method="POST" id='threeForm'>
                 <div class='flex'>
                     <div id='left_column w-1/2'>
                         <div class="mb-4">
@@ -106,7 +106,7 @@
                     </div>
                     <div id='right_column' class='px-4'>
                         <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="candidates">Candidates:</label>
+                            <label class="block text-gray-700 text-sm font-bold mb-2 flex" for="candidates"><p>Candidates:</p><p id="candidate_counter" class="ml-2">0/20</p></label>
                             <div class="max-h-72 overflow-y-scroll overscroll-x-contain">
                                 {% for candidate in data.candidates %}
                                     {% set i = loop.index0 %}
@@ -117,7 +117,7 @@
                                             id="candidate_{{ i }}" 
                                             name="{{ i }}" 
                                             value="chosen"
-                                            onclick=""
+                                            onclick="checkLengthOfCandidates('candidate_{{ i }}')"
                                             {% for chosen_candidate in candidates %}
                                                 {% if chosen_candidate['id'] == candidate['id'] %}
                                                     checked
@@ -134,7 +134,8 @@
                 <div class="flex items-center justify-center">
                     <button
                         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        type="submit"
+                        onclick='checkThreeJSForm()'
+                        type='button'
                         >Submit
                     </button>
                 </div>
@@ -143,7 +144,58 @@
     </div>
 </div>
 
+<script>
+    //form validation
+    // checking that when the modal is submitted, at least 1 candidate is selected
+    function checkThreeJSForm() {
+        const form = document.getElementById('threeForm');
+        console.log('checking form');
+        let checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        let checked = 0;
+        for (let i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                checked++;
+            }
+        }
+        if (checked == 0) {
+            alert('Please select at least one candidate');
+            return false;
+        }
+        form.submit();
+    }
 
+    // initially, set the candidate counter to how many are already selected
+    var candidateCounter = 0;
+    let checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    for (let i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].checked) {
+            candidateCounter++;
+        }
+    }
+    // update the counter
+    candidate_counter = document.getElementById("candidate_counter");
+    candidate_counter.innerHTML = candidateCounter + "/20";
+
+    // make sure that less than 20 candidates are selected
+    function checkLengthOfCandidates(id)
+    {
+        // check if the checkbox is checked or not and update the counter accordingly
+        if (document.getElementById(id).checked) {
+            candidateCounter++;
+        } else {
+            candidateCounter--;
+        }
+        if (candidateCounter > 20) {
+            alert("Too many candidates and voters selected. Please select less than 20.");
+            document.getElementById(id).checked = false;
+            candidateCounter--;
+        }
+
+        // update the counter
+        candidate_counter = document.getElementById("candidate_counter");
+        candidate_counter.innerHTML = candidateCounter + "/20";
+    }
+</script>
 
 <script type="module">
     import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
