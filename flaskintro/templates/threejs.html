@@ -201,6 +201,7 @@
     import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
     import { FontLoader } from '/static/js/FontLoader.mjs';
     import { TextGeometry } from '/static/js/TextGeometry.mjs';
+    import { OrbitControls } from '/static/js/OrbitControls.mjs';
 
     // get average voter
     let average_voter = {
@@ -236,6 +237,29 @@
     camera.lookAt( 0, 0, 0 );
 
     const scene = new THREE.Scene();
+    
+    // orbit controls to allow for panning
+    const controls = new OrbitControls( camera, renderer.domElement );
+    controls.listenToKeyEvents( window ); // optional
+    controls.screenSpacePanning = false;
+
+    controls.maxPolarAngle = (Math.PI / 2) + 0.1;
+
+    // Raycasting to allow for hover over meshes
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+
+    function onPointerMove( event ) {
+
+        // calculate pointer position in normalized device coordinates
+        // (-1 to +1) for both components
+    
+        pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+        pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    
+    }
+
+    window.addEventListener( 'pointermove', onPointerMove );
 
     // for every candidate, the material colour is randomly generated
     // could set to manual generation to evade overlap?
@@ -415,15 +439,13 @@
 
     // need to test more positions for the camera to be in
     camera.position.z = largest_axis * 2.5;
-    // have the camera rotation be facing down
-    scene.rotation.x = 0.2;
 
     // animate is ran every frame to update the scene (in this case the rotation)
     function animate() {
         requestAnimationFrame( animate );
 
         // rotate the scene itself rather than the camera along the y-axis
-        scene.rotation.y += 0.005;
+        controls.update();
         xTextMesh.lookAt(camera.position);
         yTextMesh.lookAt(camera.position);
         zTextMesh.lookAt(camera.position);
