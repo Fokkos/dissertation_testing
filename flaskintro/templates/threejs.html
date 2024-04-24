@@ -237,6 +237,7 @@
     camera.lookAt( 0, 0, 0 );
 
     const scene = new THREE.Scene();
+    scene.background = new THREE.Color( 0xffffff );
     
     // orbit controls to allow for panning
     const controls = new OrbitControls( camera, renderer.domElement );
@@ -333,9 +334,9 @@
     // find the largest axis to determine how frequent the axis line dashes should be
     let largest_axis = Math.max(max_x, max_y, max_z)
 
-    // axis material is white and dashed
+    // axis material is black and dashed
     const axisMaterial = new THREE.LineDashedMaterial( {
-        color: 0xffffff,
+        color: 0x000000,
         linewidth: 1,
         scale: 1,
         // dashSize is the length of the dash, gapSize is the length of the gap
@@ -386,7 +387,7 @@
         tGeometry.center();
 
         xTextMesh = new THREE.Mesh(tGeometry, [
-            new THREE.MeshPhongMaterial({ emissive: 0xff0000, emissiveIntensity: 0.5}),
+            new THREE.MeshPhongMaterial({ emissive: 0xff0000, emissiveIntensity: 1}),
             new THREE.MeshPhongMaterial({ color: 0xff0000 }),
         ]);
         
@@ -407,7 +408,7 @@
         tGeometry.center();
 
         yTextMesh = new THREE.Mesh(tGeometry, [
-            new THREE.MeshPhongMaterial({ emissive: 0xff0000, emissiveIntensity: 0.5}),
+            new THREE.MeshPhongMaterial({ emissive: 0xff0000, emissiveIntensity: 1}),
             new THREE.MeshPhongMaterial({ color: 0xff0000 }),
         ]);
         
@@ -428,7 +429,7 @@
         tGeometry.center();
 
         zTextMesh = new THREE.Mesh(tGeometry, [
-            new THREE.MeshPhongMaterial({ emissive: 0xff0000, emissiveIntensity: 0.5}),
+            new THREE.MeshPhongMaterial({ emissive: 0xff0000, emissiveIntensity: 1}),
             new THREE.MeshPhongMaterial({ color: 0xff0000 }),
         ]);
         
