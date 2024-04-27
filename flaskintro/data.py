@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Add the /helpers directory to the path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'helpers'))
+
 from calculations import choose_candidate
 
 class Data:

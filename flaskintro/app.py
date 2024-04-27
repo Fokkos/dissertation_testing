@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Add the /helpers directory to the path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'helpers'))
+
 from flask import Flask, render_template, url_for, request, redirect, jsonify, after_this_request
 from csv_handler import process_csv
 from data import Data
