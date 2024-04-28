@@ -16,8 +16,8 @@
   </div>
 
   <!-- Canvas to display the chart.js visualisation -->
-  <div id='showCanvas' class='hidden flex justify-center w-[100%]'>
-    <div class='w-1/2'>
+  <div id='showCanvas' class='hidden flex justify-center w-[100%] mb-4'>
+    <div class='md:w-1/2'>
       <div class='flex justify-center my-2'>
         <h1 class='text-center text-2xl font-bold'>Parallel Coordinate Plot</h1>
         <button 
@@ -27,7 +27,7 @@
           Save as PNG
         </button>
       </div>
-      <div class='border-x-2 border-t-2'>
+      <div class='border-2'>
         <canvas id="pcpChart"></canvas>
       </div>
       <div class='flex justify-center my-2'>
@@ -101,9 +101,15 @@
         datasets: selectedData,
       },
       options: {
+        responsive: true,
+        maintainAspectRatio: false,
         scales: {
           y: {
-            beginAtZero: false
+            beginAtZero: false,
+            // only show ticks on the y-axis for pcp charts
+            ticks: {
+              display: !(type === 'radar'),
+            }
           }
         },
         // adds interactivity to the chart so that when hovered over, the line becomes thicker
@@ -162,10 +168,14 @@
       plugins: [plugin],
     });
 
-    // If type is "radar", position the legend on the left
-    if (type === "radar") {
+    // If type is "radar" and screen width is greater than 800px, position the legend on the left
+    windowWidth = window.innerWidth;
+    if (type === "radar" && windowWidth > 800) {
+      console.log(window.innerWidth)
       chartInstance.options.plugins.legend.position = 'left';
     }
+
+    chartInstance.canvas.parentNode.style.height = '500px';
 
     // Finally, update the chart instance
     chartInstance.update();
@@ -269,7 +279,6 @@
         // since candidates and voters are the SAME format, they can just be collected into a single array
         selectedData.push(new_candidate{{ id }});
     {% endfor %}
-    console.log('hellooooo')
     return [selectedData, selectedVariables];
   }
 

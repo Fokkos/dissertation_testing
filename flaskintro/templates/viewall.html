@@ -1,18 +1,12 @@
 {% extends 'base.html' %}
 
-{% block head %}
-    <title>All {{ type }}s</title>
-{% endblock %}
-
 {% block body %}
-<table class="table-auto">
-    <h1>All {{ type }}s</h1>
-    <div class='py-2'>
-        <form class="flex">   
-            <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-            <div class="flex">
-                <input type="search" id="default-search" class="block w-full max-w-[300px] p-2 ps-3 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" placeholder="Search for {{type}}" name='name' required />
-                <button type="submit" class=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+    <div class='text-3xl md:text-xl font-bold ml-2 flex justify-center md:block md:justify-normal'>All {{type}}s</div>
+    <div class='py-2 ml-2 flex justify-center md:block md:justify-normal'>
+        <form>   
+            <div class='flex w-screen justify-center md:justify-normal'>
+                <input type="search" id="default-search" class="w-3/4 md:max-w-[400px] p-2 ps-3 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" placeholder="Search for {{type}}" name='name' required />
+                <button type="submit" class=" bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 w-1/5 md:max-w-[60px]">
                     <span class="material-icons text-white text-ce">search</span>
                 </button>
             </div>
@@ -21,97 +15,103 @@
     {% if not dataset %}
         <p>No {{type}}s found</p>
     {% else %}
-    <tbody>
-        <th class="border"></th>
-        <th class="border">Name</th>
-        {% if type == 'candidate' %}
-            <th class="border flex justify-center items-center">Cost
-                <p 
-                    data-tooltip-target="cost-tooltip" 
-                    class="">
-                    <!--material ui question mark span-->
-                    <span class="material-icons text-zinc-500 scale-75">help</span>
-                </p>
-                <div id="cost-tooltip" role="tooltip" class="text-center absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                    Used for participatory budget elections. <br>The total cost of this candidate
-                    <div class="tooltip-arrow" data-popper-arrow></div>
-                </div>
-            </th>
-        {% endif %}
-        {% for variable_name in data.variable_names %}
-            <th class="border px-1">{{ variable_name }}</th>
-        {% endfor %}
-        
-        {% for datapoint in dataset %}
-            <tr id="row_{{ datapoint["id"] }}">
-                <td class="border">
-                    <form action="{{url_for('delete_' + type)}}" method="post">
-                        <input type="hidden" name="location" value="view_all"/>
-                        <input type="hidden" name="id" value="{{ datapoint["id"] }}"/>
+    <div class='max-w-screen overflow-x-auto'>
+        <table class="table ml-2">
+            <tbody>
+                <th class="border"></th>
+                <th class="border">Name</th>
+                {% if type == 'candidate' %}
+                    <th class="border">
+                        <div class='flex justify-center'>
+                            Cost
+                            <p 
+                                data-tooltip-target="cost-tooltip" 
+                                class="">
+                                <!--material ui question mark span-->
+                                <span class="material-icons text-zinc-500 scale-75">help</span>
+                            </p>
+                            <div id="cost-tooltip" role="tooltip" class="text-center absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                Used for participatory budget elections. <br>The total cost of this candidate
+                                <div class="tooltip-arrow" data-popper-arrow></div>
+                            </div>
+                        </div>
+                    </th>
+                {% endif %}
+                {% for variable_name in data.variable_names %}
+                    <th class="border px-1">{{ variable_name }}</th>
+                {% endfor %}
+                
+                {% for datapoint in dataset %}
+                    <tr id="row_{{ datapoint["id"] }}">
+                        <td class="border">
+                            <form action="{{url_for('delete_' + type)}}" method="post">
+                                <input type="hidden" name="location" value="view_all"/>
+                                <input type="hidden" name="id" value="{{ datapoint["id"] }}"/>
+                                {% if type == 'candidate' %}
+                                    <input type="hidden" name="cost" value="{{ datapoint['cost'] }}"/>
+                                {% endif %}
+                                {% for i in range(data.variables) %}
+                                    <input type="hidden" name="variable_{{ i }}" value="{{ datapoint[i] }}"/>
+                                {% endfor %}
+                                <button 
+                                    class="bg-red-500 hover:bg-red-700 text-black font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline" 
+                                    type="submit"
+                                    >
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </form>
+                        </td>
+                        <td class="border">{{ datapoint['id'] }}
                         {% if type == 'candidate' %}
-                            <input type="hidden" name="cost" value="{{ datapoint['cost'] }}"/>
+                            <td class="border">
+                                <input 
+                                        class="outline-none w-20"
+                                        id="{{datapoint['id']}}_cost" 
+                                        type="number" 
+                                        step = "1"
+                                        min = "1"
+                                        value = {{datapoint['cost']}}
+                                        name="cost"
+                                        onchange='updateCost(`{{ datapoint['id'] }}`)'
+                                        required>
+                            </td>
                         {% endif %}
                         {% for i in range(data.variables) %}
-                            <input type="hidden" name="variable_{{ i }}" value="{{ datapoint[i] }}"/>
+                            <td class="border">{{ datapoint[i] }}</td>
                         {% endfor %}
-                        <button 
-                            class="bg-red-500 hover:bg-red-700 text-black font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline" 
-                            type="submit"
-                            >
-                            <span class="material-icons">delete</span>
-                        </button>
-                    </form>
-                </td>
-                <td class="border">{{ datapoint['id'] }}
-                {% if type == 'candidate' %}
-                    <td class="border">
-                        <input 
-                                class="outline-none w-20"
-                                id="{{datapoint['id']}}_cost" 
-                                type="number" 
-                                step = "1"
-                                min = "1"
-                                value = {{datapoint['cost']}}
-                                name="cost"
-                                onchange='updateCost(`{{ datapoint['id'] }}`)'
-                                required>
-                    </td>
-                {% endif %}
-                {% for i in range(data.variables) %}
-                    <td class="border">{{ datapoint[i] }}</td>
+                        </td>
+                    </tr>
                 {% endfor %}
-                </td>
-            </tr>
-        {% endfor %}
-    </tbody>
-    {% endif %}
-</table>
+            </tbody>
+            {% endif %}
+        </table>
+    </div>
 
-<script>
-    function updateCost(id) {
-        let cost = document.getElementById(id+'_cost').value;
+    <script>
+        function updateCost(id) {
+            let cost = document.getElementById(id+'_cost').value;
 
-        if (cost < 1) {
-            cost = 1
-            document.getElementById(id+'_cost').value = 1
-            alert('Cost must be at least 1')
+            if (cost < 1) {
+                cost = 1
+                document.getElementById(id+'_cost').value = 1
+                alert('Cost must be at least 1')
+            }
+            // if cost is not an integer, round it to the nearest integer and alert
+            if (cost % 1 != 0) {
+                cost = Math.round(cost)
+                document.getElementById(id+'_cost').value = cost
+                alert('Cost must be an integer')
+            }
+
+            formData = new FormData();
+            formData.append("id", id);
+            formData.append("cost", cost);
+
+            fetch('/updateCost', {
+                method: 'POST',
+                body: formData
+            })
         }
-        // if cost is not an integer, round it to the nearest integer and alert
-        if (cost % 1 != 0) {
-            cost = Math.round(cost)
-            document.getElementById(id+'_cost').value = cost
-            alert('Cost must be an integer')
-        }
-
-        formData = new FormData();
-        formData.append("id", id);
-        formData.append("cost", cost);
-
-        fetch('/updateCost', {
-            method: 'POST',
-            body: formData
-        })
-    }
-</script>
+    </script>
 {% endblock %}
 

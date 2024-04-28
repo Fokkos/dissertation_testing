@@ -6,23 +6,36 @@
 
 {% block body %}
     <div class='px-2'>
-        <div class='flex space-x-4 pb-2'>
-            <div class="font-bold text-2xl">
-                <h1>Full Results</h1>
+        <div class='text-3xl md:text-xl font-bold ml-2 flex justify-center md:justify-normal'>
+            Full Results
+            <p 
+                data-tooltip-target="results-right-tooltip"
+                data-tooltip-placement="right" 
+                class="hidden md:block">
+                <!--material ui question mark span-->
+                <span class="material-icons text-zinc-500 scale-75">help</span>
+            </p>
+            <p 
+                data-tooltip-target="results-bottom-tooltip"
+                data-tooltip-placement="bottom" 
+                class="block md:hidden">
+                <!--material ui question mark span-->
+                <span class="material-icons text-zinc-500 scale-75">help</span>
+            </p>
+            <div id="results-bottom-tooltip" role="tooltip" class="text-center absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                Hover over a candidate's name to view<br>
+                 the distance between it and the voter<br>
+                Click on a voter's name in order <br> 
+                to see their full results.
+                <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
-            <!-- CALCULATE distances -->
-            <form action="{{ url_for('calculate_distances') }}" method="post">
-                <input type="hidden" name="location" value="view_all"/>
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline min-w-7  min-h-full px-2" 
-                    onclick="checkResultsValidation()"  
-                    type="submit">
-                    Calculate
-                </button>
-            </form>
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline min-w-7  min-h-full px-2" 
-                    onclick="toggleResultsHelp()">
-                    Help
-                </button>
+            <div id="results-right-tooltip" role="tooltip" class="text-center absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                Hover over a candidate's name to view<br>
+                 the distance between it and the voter<br>
+                Click on a voter's name in order <br> 
+                to see their full results.
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
         </div>
         <div id='resultsHelp' class='hidden'>
             <p>Hover over a candidate's name to view the distance between it and the voter<br>
@@ -34,43 +47,45 @@
             {% if data.candidates | length > 10 %}
                 <p>Since there are more than 10 candidates, only the top 10 winners are displayed for each voter.</p>
             {% endif %}
-            <table class="table-auto">
-            <tbody>
-                <th class="border">voter</th>
-                <th class="border">winner</th>
-                {% if data.candidates|length > 10 %}
-                    {% set length = 10 %}
-                {% else %}
-                    {% set length = data.candidates|length %}
-                {% endif %}
-                {% for i in range(1, length) %}
-                    <th class="border">#{{ i+1 }}</th>
-                {% endfor %}
-                <!-- show average voter -->
-                <tr>
-                <td class="border">Average voter</td>
-                {% for distance in data.average_voter['distances'][:10] %}
-                    <td class="border px-2" data-tooltip-target="tooltip-average-voter-{{distance[0]}}">{{ distance[0][:20] }} </td>
-                    <div id="tooltip-average-voter-{{distance[0]}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                        {{ distance[1]|round(4) }}
-                        <div class="tooltip-arrow" data-popper-arrow></div>
-                    </div>
-                {% endfor %}
-                </tr>
-                {% for voter in data.voters %}
-                <tr>
-                <td class="border">{{ voter['id'] }}</td>
-                {% for distance in voter['distances'][:10] %}
-                    <td class="border px-2" data-tooltip-target="tooltip-{{voter['id']}}-{{distance[0]}}">{{ distance[0][:20] }} </td>
-                    <div id="tooltip-{{voter['id']}}-{{distance[0]}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                        {{ distance[1]|round(4) }}
-                        <div class="tooltip-arrow" data-popper-arrow></div>
-                    </div>
-                {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-            </table>
+            <div class='max-w-screen overflow-x-auto'>
+                <table class="">
+                    <tbody class=''>
+                        <th class="border">voter</th>
+                        <th class="border">winner</th>
+                        {% if data.candidates|length > 10 %}
+                            {% set length = 10 %}
+                        {% else %}
+                            {% set length = data.candidates|length %}
+                        {% endif %}
+                        {% for i in range(1, length) %}
+                            <th class="border">#{{ i+1 }}</th>
+                        {% endfor %}
+                        <!-- show average voter -->
+                        <tr>
+                        <td class="border">Average voter</td>
+                        {% for distance in data.average_voter['distances'][:10] %}
+                            <td class="border px-2" data-tooltip-target="tooltip-average-voter-{{distance[0]}}">{{ distance[0][:20] }} </td>
+                            <div id="tooltip-average-voter-{{distance[0]}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                {{ distance[1]|round(4) }}
+                                <div class="tooltip-arrow" data-popper-arrow></div>
+                            </div>
+                        {% endfor %}
+                        </tr>
+                        {% for voter in data.voters %}
+                        <tr>
+                        <td class="border">{{ voter['id'] }}</td>
+                        {% for distance in voter['distances'][:10] %}
+                            <td class="border px-2" data-tooltip-target="tooltip-{{voter['id']}}-{{distance[0]}}">{{ distance[0][:20] }} </td>
+                            <div id="tooltip-{{voter['id']}}-{{distance[0]}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                {{ distance[1]|round(4) }}
+                                <div class="tooltip-arrow" data-popper-arrow></div>
+                            </div>
+                        {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% endif %}
     </div>
 
