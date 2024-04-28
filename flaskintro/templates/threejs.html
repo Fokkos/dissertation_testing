@@ -5,9 +5,11 @@
 {% endblock %}
 
 {% block body %}
-<div class='flex'>
-    <div id="container" class='overflow-x-hidden w-4/5'></div>
-    <div class='w-1/5'>
+<div class='block md:flex'>
+    <div id='containerContainer' class='flex justify-center w-full'>
+        <div id="container" class='overflow-x-hidden w-4/5 flex justify-center md:block md:justify-normal '></div>
+    </div>
+    <div class='w-full md:w-1/5'>
         <div class='flex justify-center'>
             <button 
                 id="2dButton" 
@@ -55,9 +57,9 @@
 <!-- options modal -->
 <div id="threeModal" class="modal hidden fixed inset-0 bg-transparent flex justify-center items-center w-screen">
     <div id="threeModalOverlay" class="modal-overlay bg-gray-500 bg-opacity-75 fixed inset-0 z-40"></div>
-    <div class="modal-content bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 z-50">
+    <div class="modal-content bg-white shadow-md rounded pt-6 pb-8 mb-4 z-50 max-w-[95%] md:w-[70%]">
         <!-- Form -->
-        <div class="mb-4 flex items-center justify-between">
+        <div class="mb-4 flex items-center justify-between px-8">
             <h5 class="modal-title text-xl font-semibold">Edit Three.js 3D Visualisation</h5>
             <button
                 class="close-modal flex justify-center rounded border border-gray-300 bg-[--background] hover:bg-red-400"
@@ -68,79 +70,85 @@
                 ><span class="material-icons">close</span>
             </button>
         </div>
-        <div class="modal-body">
-            <form action="/threejs" method="POST" id='threeForm'>
-                <div class='flex'>
-                    <div id='left_column w-1/2'>
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="zAxis">Distance Measure:</label>
-                            <select name="distance_measure" id="distance_measure" class="w-full p-2 border border-gray-300 rounded">
-                                <option value="euclidean" {% if line_type == 'euclidean' %} selected {% endif %}>Euclidean</option>
-                                <option value="manhattan" {% if line_type == 'manhattan' %} selected {% endif %}>Manhattan</option>
-                            </select>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="xAxis">X-Axis:</label>
-                            <select name="xAxis" id="xAxis" class="w-full p-2 border border-gray-300 rounded">
-                                {% for i in range(data.variables) %}
-                                    <option value="{{ i }}" {% if chosen_variables[0] == i %} selected {% endif %}>{{ data.variable_names[i] }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="yAxis">Y-Axis:</label>
-                            <select name="yAxis" id="yAxis" class="w-full p-2 border border-gray-300 rounded">
-                                {% for i in range(data.variables) %}
-                                    <option value="{{ i }}" {% if chosen_variables[1] == i %} selected {% endif %}>{{ data.variable_names[i] }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="zAxis">Z-Axis:</label>
-                            <select name="zAxis" id="zAxis" class="w-full p-2 border border-gray-300 rounded">
-                                {% for i in range(data.variables) %}
-                                    <option value="{{ i }}" {% if chosen_variables[2] == i %} selected {% endif %}>{{ data.variable_names[i] }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+        <form action="/threejs" method="POST" id='threeForm'>
+            <div class='modal-body block md:flex px-8 max-h-[80%] space-y-4 md:space-y-0"'>
+                <div id='left_column' class='w-full md:w-1/2'>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="zAxis">Distance Measure:</label>
+                        <select name="distance_measure" id="distance_measure" class="w-full p-2 border border-gray-300 rounded">
+                            <option value="euclidean" {% if line_type == 'euclidean' %} selected {% endif %}>Euclidean</option>
+                            <option value="manhattan" {% if line_type == 'manhattan' %} selected {% endif %}>Manhattan</option>
+                        </select>
                     </div>
-                    <div id='right_column' class='px-4'>
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2 flex" for="candidates"><p>Candidates:</p><p id="candidate_counter" class="ml-2">0/20</p></label>
-                            <div class="max-h-72 overflow-y-scroll overscroll-x-contain">
-                                {% for candidate in data.candidates %}
-                                    {% set i = loop.index0 %}
-                                    <div class="flex justify-items-start">
-                                        <input 
-                                            class="m-2" 
-                                            type="checkbox" 
-                                            id="candidate_{{ i }}" 
-                                            name="{{ i }}" 
-                                            value="chosen"
-                                            onclick="checkLengthOfCandidates('candidate_{{ i }}')"
-                                            {% for chosen_candidate in candidates %}
-                                                {% if chosen_candidate['id'] == candidate['id'] %}
-                                                    checked
-                                                {% endif %}
-                                            {% endfor %}
-                                            >
-                                        <label for="{{ candidate['id'] }}">{{ candidate['id'] }}</label>
-                                    </div>
-                                {% endfor %}
-                            </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="xAxis">X-Axis:</label>
+                        <select name="xAxis" id="xAxis" class="w-full p-2 border border-gray-300 rounded">
+                            {% for i in range(data.variables) %}
+                                <option value="{{ i }}" {% if chosen_variables[0] == i %} selected {% endif %}>{{ data.variable_names[i] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="yAxis">Y-Axis:</label>
+                        <select name="yAxis" id="yAxis" class="w-full p-2 border border-gray-300 rounded">
+                            {% for i in range(data.variables) %}
+                                <option value="{{ i }}" {% if chosen_variables[1] == i %} selected {% endif %}>{{ data.variable_names[i] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="zAxis">Z-Axis:</label>
+                        <select name="zAxis" id="zAxis" class="w-full p-2 border border-gray-300 rounded">
+                            {% for i in range(data.variables) %}
+                                <option value="{{ i }}" {% if chosen_variables[2] == i %} selected {% endif %}>{{ data.variable_names[i] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div id='right_column' class='w-full md:w-1/2 px-4'>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2 flex" for="candidates"><p>Candidates:</p><p id="candidate_counter" class="ml-2">0/20</p></label>
+                        <div class="max-h-72 overflow-y-scroll overscroll-x-contain">
+                            {% for candidate in data.candidates %}
+                                {% set i = loop.index0 %}
+                                <div class="flex justify-items-start">
+                                    <input 
+                                        class="m-2" 
+                                        type="checkbox" 
+                                        id="candidate_{{ i }}" 
+                                        name="{{ i }}" 
+                                        value="chosen"
+                                        onclick="checkLengthOfCandidates('candidate_{{ i }}')"
+                                        {% for chosen_candidate in candidates %}
+                                            {% if chosen_candidate['id'] == candidate['id'] %}
+                                                checked
+                                            {% endif %}
+                                        {% endfor %}
+                                        >
+                                    <label for="{{ candidate['id'] }}">{{ candidate['id'] }}</label>
+                                </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
-                <div class="flex items-center justify-center">
-                    <button
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        onclick='checkThreeJSForm()'
-                        type='button'
-                        >Submit
-                    </button>
-                </div>
-            </form>
-        </div>
+            </div>
+            <div class="flex justify-center items-center mt-4 space-x-4">
+                <button
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    onclick='checkThreeJSForm()'
+                    type='button'
+                    >Submit
+                </button>
+                <button
+                    class="md:hidden bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    aria-label="Close modal"
+                    title="Close modal"
+                    onclick="closeModal('threeModal')"
+                    type="button"
+                    >Close
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
