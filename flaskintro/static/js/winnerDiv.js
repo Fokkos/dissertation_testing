@@ -3,7 +3,7 @@ function findWinner() {
     if (checkResultsValidation()) {
         
         // clear the winnersDiv
-        document.querySelector('.winnersDiv').innerHTML = '';
+        document.getElementById('winnersDiv').innerHTML = '';
 
         // get the Winner of the election
         getWinner()
@@ -41,20 +41,20 @@ function getWinner() {
                     winnerDiv.className = 'flex justify-center pt-3 px-10 text-3xl font-bold';
                     let winnerText = document.createTextNode('No winners found');
                     winnerDiv.appendChild(winnerText);
-                    document.querySelector('.winnersDiv').appendChild(winnerDiv);
+                    document.getElementById('winnersDiv').appendChild(winnerDiv);
 
                     let infoDiv = document.createElement('div');
                     infoDiv.className = 'flex justify-center pt-3 px-10 text-xl font-bold';
                     let infoText = document.createTextNode('All votes made were above the allocated budget.');
                     infoDiv.appendChild(infoText);
-                    document.querySelector('.winnersDiv').appendChild(infoDiv);
+                    document.getElementById('winnersDiv').appendChild(infoDiv);
                     
                 } else {
                     let winnerDiv = document.createElement('div');
                     winnerDiv.className = 'flex justify-center pt-3 px-10 text-sm font-bold';
                     let winnerText = document.createTextNode('Remaining Budget: ' + json['remaining_budget']);
                     winnerDiv.appendChild(winnerText);
-                    document.querySelector('.winnersDiv').appendChild(winnerDiv);
+                    document.getElementById('winnersDiv').appendChild(winnerDiv);
 
                     if (json['winner'].length > 10) {
                         let winnerDiv = document.createElement('div');
@@ -63,11 +63,12 @@ function getWinner() {
                         winnerLink.href = "/winners";
                         winnerLink.innerText = 'Too many winners to display, click here to see all winners.';
                         winnerDiv.appendChild(winnerLink);
-                        document.querySelector('.winnersDiv').appendChild(winnerDiv);
+                        document.getElementById('winnersDiv').appendChild(winnerDiv);
                     }
                 }
             }
         }
+        document.getElementById('winnersDiv').classList.add('max-h-30');
     })
 }
 
@@ -111,7 +112,7 @@ function createIndividualText(position, winner, voting_style, election_type) {
     //append the text node to the winnerDiv
     winnerDiv.appendChild(winnerText);
     //append the winnerDiv to the winnersDiv
-    document.querySelector('.winnersDiv').appendChild(winnerDiv);
+    document.getElementById('winnersDiv').appendChild(winnerDiv);
 
     scoreDiv = document.createElement('div');
     scoreDiv.className = 'flex justify-center py-0 px-10 text-sm';
@@ -121,5 +122,5 @@ function createIndividualText(position, winner, voting_style, election_type) {
     }
     scoreText = document.createTextNode(scoreText);
     scoreDiv.appendChild(scoreText);
-    document.querySelector('.winnersDiv').appendChild(scoreDiv);
+    document.getElementById('winnersDiv').appendChild(scoreDiv);
 }
