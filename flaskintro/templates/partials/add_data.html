@@ -1,9 +1,10 @@
 <!-- Modal Trigger Button -->
 <button 
     id="{{type + 'ModalTrigger'}}" 
-    class="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline min-h-7 min-w-7"
+    class="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline md:min-h-7 md:min-w-7 p-2 md:p-0"
     onclick="openModal('{{type}}Modal')">
-    <span class="material-icons">add</span>
+    <p class='hidden md:block'><span class="material-icons">add</span></p>
+    <p class='block md:hidden'>{{'Add ' + type}}</p>
 </button>
 
 <!-- Modal -->

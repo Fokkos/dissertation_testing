@@ -6,10 +6,15 @@
         action="{{ url_for('csv') }}" 
         method="post" 
         enctype="multipart/form-data"
-        onsubmit="return confirm('This will delete voter and candidate data, are you sure?');">
-        <input type="file" name="file" accept=".csv" required>
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-        Upload
-        </button>
+        onsubmit="return confirm('This will delete voter and candidate data, are you sure?');"
+        class="block md:flex">
+        <div class="flex justify-center md:justify-normal py-2 md:py-0">
+            <input type="file" name="file" accept=".csv" required>
+        </div>
+        <div class="flex justify-center md:justify-normal py-2 md:py-0">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                Upload
+            </button>
+        </div>
     </form>
 </div>

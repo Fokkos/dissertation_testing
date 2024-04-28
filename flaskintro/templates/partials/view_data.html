@@ -1,15 +1,17 @@
-<div class="px-2 py-2 w-1/2 max-h-1/3 overflow-y-scroll" id="view_{{type}}s">
+<div class="px-2 py-2 w-1/2 max-h-1/3 overflow-y-scroll border-2 md:border-0" id="view_{{type}}s">
     <table class="table-auto">
-        <div class="flex space-x-4">
-            <h1>{{type.title() + 's'}}</h1>
-            <!-- INPUT data -->
-            {% with type = type %}
-                {% include 'partials/add_data.html' %}
-            {% endwith %}
+        <div class="block space-y-2">
+            <div class='flex space-x-4 items-center font-bold'>
+                <div class='text-lg'>{{type.title() + 's'}}</div>
+                <!-- INPUT data -->
+                {% with type = type %}
+                    {% include 'partials/add_data.html' %}
+                {% endwith %}
+            </div>
             {% if dataset |length > 10 %}
                 <p>Too many {{type}}s to display. 
                     <a href="{{ type }}s">
-                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline min-h-7 min-w-7 px-2" >
+                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline min-h-7 min-w-7 p-2" >
                             View All
                         </button>
                     </a>

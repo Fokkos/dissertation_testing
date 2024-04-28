@@ -41,12 +41,18 @@
             {% else %} class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0" {% endif %}>
             Visualisations</a>
           </li>
+          <li>
+            <button class="bg-zinc-500 hover:bg-zinc-700 text-white font-bold py-4 px-6 rounded focus:outline-none focus:shadow-outline hidden md:block" onclick="openModal('settingsDialog')">
+              <span class="material-icons scale-150">settings</span>
+            </button>
+            <div class='md:hidden' onclick="openModal('settingsDialog')">
+              <a href='#'
+                class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0">
+                Settings
+              </a>
+            </div>
+          </li>
         </ul>
-      </div>
-      <div>
-        <button class="bg-zinc-500 hover:bg-zinc-700 text-white font-bold py-4 px-6 rounded focus:outline-none focus:shadow-outline" onclick="openModal('settingsDialog')">
-            <span class="material-icons scale-150">settings</span>
-        </button>
       </div>
     </div>
   </nav>
