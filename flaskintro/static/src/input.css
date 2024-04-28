@@ -25,3 +25,13 @@
   display:block;
   color: red;
 }
+
+@media all and (max-width:800px)
+{
+    #view_candidates, #view_voters
+    {
+        display: block; 
+        float: none; 
+        width: 100%;
+    }
+}

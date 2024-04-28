@@ -3,13 +3,13 @@
     <div class='flex justify-center'>
         <h2>Variable Settings</h2>
     </div>
-    <div class='flex'>
+    <div class='block md:flex'>
     <!-- change quantity -->
         <form
             action="{{ url_for('set_variables') }}" 
             method="post"
             onsubmit="return confirm('This will delete voter and candidate data, are you sure?');">
-            <div class="mb-1 flex">
+            <div class="mb-1 flex justify-center md:justify-normal">
             <input 
                 class="shadow appearance-none border rounded-l-lg w-1/5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                 id="variables" 
@@ -27,12 +27,14 @@
 
         <!-- Change names -->
         <!-- Modal Trigger Button -->
-        <button 
-            id="varNameModalTrigger" 
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline"
-            onclick="openModal('varNameModal')">
-            Edit Variable names
-        </button>
+        <div class='flex justify-center md:justify-normal'>
+            <button 
+                id="varNameModalTrigger" 
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline"
+                onclick="openModal('varNameModal')">
+                Edit Variable names
+            </button>
+        </div>
 
         <!-- Modal -->
         <div id="varNameModal" class="modal hidden fixed inset-0 flex justify-center items-center">
