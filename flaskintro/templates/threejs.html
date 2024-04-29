@@ -204,9 +204,11 @@
         candidate_counter.innerHTML = candidateCounter + "/20";
     }
 </script>
-
+<script src="https://unpkg.com/three@0.137.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.137.0/examples/js/lines/LineSegmentsGeometry.js"></script>
+<script src="https://unpkg.com/three@0.137.0/examples/js/lines/LineMaterial.js"></script>
+<script src="https://unpkg.com/three@0.137.0/examples/js/lines/LineSegments2.js"></script>
 <script type="module">
-    import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
     import { FontLoader } from '/static/js/FontLoader.mjs';
     import { TextGeometry } from '/static/js/TextGeometry.mjs';
     import { OrbitControls } from '/static/js/OrbitControls.mjs';
@@ -278,6 +280,18 @@
         materials.push(new THREE.LineBasicMaterial( { color: '{{colours[i]}}' } ));
     {% endfor %}
 
+    const materials2 = []
+    {% for i in range(20) %}
+        // make color random
+        materials2.push(
+            new THREE.LineMaterial({
+                color: '{{colours[i]}}',
+                linewidth: 5, // this is the width in pixels
+                resolution: new THREE.Vector2(window.innerWidth, window.innerHeight)
+              })
+        );
+    {% endfor %}
+
     // this function creates a threeJS point given three coordinates
     function createNewPoint(x, y, z) {
         return ( new THREE.Vector3( x, y, z ) );
@@ -335,7 +349,10 @@
             let geometry = new THREE.BufferGeometry().setFromPoints( [point1, point2, point3, point4] );
         {% endif %}
         // creates the line with the randomly generated line colour defined earlier
-        let line = new THREE.Line( geometry, materials[i] );
+        let lineGeometry = new THREE.LineSegmentsGeometry();
+        lineGeometry.setPositions(geometry.getAttribute('position').array);
+        console.log(materials2[i])
+        let line = new THREE.LineSegments2( lineGeometry, materials2[i] );
         scene.add( line );
     }
 
