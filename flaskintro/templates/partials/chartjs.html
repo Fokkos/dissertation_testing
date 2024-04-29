@@ -46,19 +46,10 @@
     </div>
   </div>
 
-  <!--
-      <div class='flex justify-center'>
-        <button 
-          id="saveAsPng" 
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          onclick="saveImage()">
-          Save as PNG
-        </button> 
-      </div>
-  -->
-
-<!-- The 'create chart' modal to be rendered after the canvas -->
 {% include 'partials/create_chart_modal.html' %}
+
+<!-- Chart.js CDN import -->
+<script src="https://unpkg.com/chart.js@latest"></script>
 
 <script>
   // initially there are no chart instances
@@ -256,14 +247,11 @@
     
     {% for candidate in default_candidates %}
         {% set id = loop.index %} 
-
         let new_candidate{{ id }} = {}; // Create a new object for each iteration
-
-        // for radar charts, names > 12 characters get cut off
         new_candidate{{ id }}.label = "{{ candidate['id'] }}";
-
         new_candidate{{ id }}.fill = false; // removes bg from radar chart
         new_candidate{{ id }}.data = [];
+        // highlight the top candidate according to distance from average voter
         {% if candidate['id'] == data.average_voter['distances'][0][0] %} 
             new_candidate{{ id }}.borderWidth = 5;
         {% else %}  
