@@ -60,17 +60,17 @@ class Data:
     
     def delete_data_point(self, type: str, form):
         point = self.extract_point(form)
-        if point not in self.candidates and point not in self.voters:
-            return
         if type == 'candidate':
-            self.candidates.remove(point)
+            if point in self.candidates:
+                self.candidates.remove(point)
         elif type == 'voter':
             # if there are results, remove them so that the voter can be found for deletion
             for voter in self.voters:
                 if 'distances' in voter:
                     del voter['distances']
-            self.voters.remove(point)
-            self.average_voter = self.update_average_voter()
+            if point in self.voters:
+                self.voters.remove(point)
+                self.average_voter = self.update_average_voter()
         self.results = False
     
     def extract_point(self, form):
