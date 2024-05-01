@@ -38,10 +38,24 @@
             Full Results</a>
           </li>
           <li class='md:flex md:items-center'>
-            <a href="/visualisations"
-            {% if type == 'visualisations' %} class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0" 
-            {% else %} class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0" {% endif %}>
-            Visualisations</a>
+            <a
+            {% if type == 'visualisations' %} 
+              class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0" 
+            {% else %} 
+              class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0"
+              {% if data.candidates|length < 2 or data.voters|length == 0 %} 
+                disabled 
+                data-tooltip-target="visualisations-tooltip"
+              {% else %}
+                href="/visualisations"
+              {% endif %}
+              >Visualisations</a>
+              <div id="visualisations-tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip text-center">
+                  You must have at least 2 candidates<br>
+                  and 1 voter to view visualisations.
+                  <div class="tooltip-arrow" data-popper-arrow></div>
+              </div>
+            {% endif %}
           </li>
           <li class='md:flex md:items-center'>
             <button class="bg-zinc-500 hover:bg-zinc-700 text-white font-bold py-4 px-6 rounded focus:outline-none focus:shadow-outline hidden md:block" onclick="openModal('settingsDialog')">
