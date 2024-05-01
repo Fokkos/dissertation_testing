@@ -78,6 +78,7 @@
                         <select name="distance_measure" id="distance_measure" class="w-full p-2 border border-gray-300 rounded">
                             <option value="euclidean" {% if line_type == 'euclidean' %} selected {% endif %}>Euclidean</option>
                             <option value="manhattan" {% if line_type == 'manhattan' %} selected {% endif %}>Manhattan</option>
+                            <!--<option value="chebyshev" {% if line_type == 'chebyshev' %} selected {% endif %}>Chebyshev</option>-->
                         </select>
                     </div>
                     <div class="mb-4">
@@ -347,6 +348,36 @@
             }
 
             let geometry = new THREE.BufferGeometry().setFromPoints( [point1, point2, point2, point3, point3, point4] );
+        /* technically works but is pointless as the lines overlap and glitch out
+        {% elif line_type == 'chebyshev' %}
+            let point1 = createNewPoint(0,0,0)
+            let point2;
+            // find the greatest difference between average voter and candidate
+            let x_diff = Math.abs(candidates[i]['x'] - average_voter['x'])
+            let y_diff = Math.abs(candidates[i]['y'] - average_voter['y'])
+            let z_diff = Math.abs(candidates[i]['z'] - average_voter['z'])
+
+            if (x_diff > y_diff && x_diff > z_diff){
+                point2 = createNewPoint(candidates[i]['x'] - average_voter['x'], 0, 0)
+                if (Math.abs(point2.x) > max_x) {
+                    max_x = Math.abs(point2.x)
+                }
+            }
+            else if (y_diff > x_diff && y_diff > z_diff){
+                point2 = createNewPoint(0, candidates[i]['y'] - average_voter['y'], 0)
+                if (Math.abs(point2.y) > max_y) {
+                    max_y = Math.abs(point2.y)
+                }
+            }
+            else {
+                point2 = createNewPoint(0, 0, candidates[i]['z'] - average_voter['z'])
+                if (Math.abs(point2.z) > max_z) {
+                    max_z = Math.abs(point2.z)
+                }
+            }
+
+            let geometry = new THREE.BufferGeometry().setFromPoints( [point1, point2] );
+        */
         {% endif %}
         // creates the line with the randomly generated line colour defined earlier
         let lineGeometry = new THREE.LineSegmentsGeometry();
