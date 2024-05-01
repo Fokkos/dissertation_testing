@@ -10,8 +10,8 @@
     <div class="flex justify-center text-3xl font-bold">
         Error: 404
     </div>
-    <div class="flex justify-center text-lg">
-        Page '{{path}}' not found
+    <div class="flex justify-center text-lg text-center">
+        <p>Page '{{path}}' {% if path|length > 20 %}<br>{% endif %}not found</p>
     </div>
 </div>
 

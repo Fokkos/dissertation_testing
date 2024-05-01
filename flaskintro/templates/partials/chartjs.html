@@ -11,8 +11,21 @@
     <button 
       id="threeJSButton" 
       class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-      <a href='/threejs'>View 3D Visualisation</a>
+      <a 
+        {% if data.variables < 3 %} 
+          disabled 
+          data-tooltip-target="3d-tooltip" 
+        {% else %} 
+          href='/threejs' 
+        {% endif %}
+      >View 3D Visualisation</a>
+      
     </button>
+    <div id="3d-tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip text-center">
+      You must have at least 3 dimensions<br>
+      To view a 3d visualisation.
+      <div class="tooltip-arrow" data-popper-arrow></div>
+  </div>
   </div>
 
   <!-- Canvas to display the chart.js visualisation -->

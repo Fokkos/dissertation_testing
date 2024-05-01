@@ -163,7 +163,7 @@ def threejs():
     global data
     
     # if there are not enough candidates and/or voters redirect to index
-    if len(data.candidates) < 2 or len(data.voters) == 0:
+    if len(data.candidates) < 2 or len(data.voters) == 0 or data.variables < 3:
         return redirect(url_for('index'))   
 
     # Have the chosen variables be the top 3 with the highest variance
