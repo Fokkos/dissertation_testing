@@ -60,6 +60,8 @@ class Data:
     
     def delete_data_point(self, type: str, form):
         point = self.extract_point(form)
+        if point not in self.candidates and point not in self.voters:
+            return
         if type == 'candidate':
             self.candidates.remove(point)
         elif type == 'voter':
