@@ -260,5 +260,10 @@ def updateCost():
 
     return jsonify(newCost)
 
+@app.errorhandler(404)
+def page_not_found(e):
+    global data
+    return render_template('errors/404.html', data=data, path=request.path), 404
+
 if __name__ == "__main__":
     app.run(debug=True)

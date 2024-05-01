@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>404</title>
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <div class="flex justify-center text-3xl font-bold">
+        Error: 404
+    </div>
+    <div class="flex justify-center text-lg">
+        Page '{{path}}'' not found
+    </div>
+</div>
+
+{% endblock %}
