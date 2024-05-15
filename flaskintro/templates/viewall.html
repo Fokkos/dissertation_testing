@@ -90,13 +90,13 @@
     <script>
         function updateCost(id) {
             let cost = document.getElementById(id+'_cost').value;
-
+            // cost must be positive
             if (cost < 1) {
                 cost = 1
                 document.getElementById(id+'_cost').value = 1
                 alert('Cost must be at least 1')
             }
-            // if cost is not an integer, round it to the nearest integer and alert
+            // if cost is not an integer, round if not
             if (cost % 1 != 0) {
                 cost = Math.round(cost)
                 document.getElementById(id+'_cost').value = cost
